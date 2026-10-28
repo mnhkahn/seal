@@ -83,4 +83,7 @@
     <string name="up_to_date">Установлена последняя версия.</string>
     <string name="update_error">Ошибка обновления или проверки. Проверьте подключение и загрузите заново.</string>
     <string name="update_unconfigured">Приложение пока не настроено в сервисе обновлений.</string>
+    <string name="feedback_saving">Сохранение отзыва…</string>
+    <string name="feedback_error">Не удалось сохранить. Выберите ещё раз, чтобы повторить.</string>
+    <string name="feedback_expired">Распознайте изображение заново перед отправкой отзыва.</string>
 </resources>

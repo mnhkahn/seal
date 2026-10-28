@@ -83,4 +83,7 @@
     <string name="up_to_date">Vous avez la dernière version.</string>
     <string name="update_error">Échec de mise à jour ou de vérification. Vérifiez la connexion et réessayez.</string>
     <string name="update_unconfigured">Cette application n’est pas encore configurée sur le service de mise à jour.</string>
+    <string name="feedback_saving">Enregistrement du retour…</string>
+    <string name="feedback_error">Échec de l’enregistrement. Sélectionnez à nouveau pour réessayer.</string>
+    <string name="feedback_expired">Relancez la reconnaissance de cette image avant de donner votre avis.</string>
 </resources>

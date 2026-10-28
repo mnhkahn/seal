@@ -83,4 +83,7 @@
     <string name="up_to_date">已是最新版本。</string>
     <string name="update_error">更新失敗或驗證未通過，請檢查網路後重試取得新的下載。</string>
     <string name="update_unconfigured">更新服務尚未設定本應用程式。</string>
+    <string name="feedback_saving">正在儲存回饋…</string>
+    <string name="feedback_error">回饋儲存失敗，請再次點選重試。</string>
+    <string name="feedback_expired">請重新識別此圖片後再回饋。</string>
 </resources>

@@ -70,6 +70,9 @@ jobs:
           ./gradlew :app:testDebugUnitTest :app:assembleRelease --no-daemon --stacktrace \
             -PreleaseVersionName="$RELEASE_VERSION" -PreleaseVersionCode="$RELEASE_CODE"
 
+      - name: Verify distributable app icon
+        run: python3 tools/check_apk_icon.py app/build/outputs/apk/release/app-release.apk
+
       - name: Prepare release artifacts
         run: |
           set -euo pipefail

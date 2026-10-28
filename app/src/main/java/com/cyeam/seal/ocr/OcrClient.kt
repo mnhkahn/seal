@@ -15,10 +15,11 @@ data class Candidate(
     val component: String = "", val work: String = "", val codepoint: String = "",
     val glyphImage: String = "", val unicodeImage: String = ""
 )
+data class RecognitionResult(val candidates: List<Candidate>, val feedbackToken: String = "")
 class OcrException(val status: Int) : Exception("OCR HTTP $status")
 
 object OcrClient {
-    suspend fun recognize(png: ByteArray): List<Candidate> = withContext(Dispatchers.IO) {
+    suspend fun recognize(png: ByteArray): RecognitionResult = withContext(Dispatchers.IO) {
         require(png.isNotEmpty() && png.size <= 10 * 1024 * 1024)
         val boundary = "Seal-${UUID.randomUUID()}"
         val connection = URL(BuildConfig.OCR_URL).openConnection() as HttpURLConnection
@@ -36,8 +37,37 @@ object OcrClient {
             }
             if (connection.responseCode != 200) throw OcrException(connection.responseCode)
             val body = connection.inputStream.bufferedReader().use { it.readText() }
-            parse(body)
+            parseRecognition(body)
         } finally { connection.disconnect() }
+    }
+
+    // Clients submit a choice; image lookup, upload waiting and metadata writes
+    // are handled by the same server endpoint used by the website.
+    suspend fun feedback(token: String, accepted: Boolean, rank: Int, character: String,
+                         endpoint: String = URL(URL(BuildConfig.OCR_URL), "/mo/api/ocr/feedback").toString()) = withContext(Dispatchers.IO) {
+        val connection = URL(endpoint).openConnection() as HttpURLConnection
+        try {
+            connection.requestMethod = "POST"
+            connection.connectTimeout = 15_000
+            connection.readTimeout = 30_000
+            connection.instanceFollowRedirects = false
+            connection.doOutput = true
+            connection.setRequestProperty("Content-Type", "application/json; charset=utf-8")
+            val payload = JSONObject().put("token", token)
+                .put("decision", if (accepted) "accepted" else "rejected")
+                .put("candidate_rank", if (accepted) rank else 0)
+                .put("character", if (accepted) character else "")
+            connection.outputStream.use { it.write(payload.toString().toByteArray(Charsets.UTF_8)) }
+            if (connection.responseCode != 200) throw OcrException(connection.responseCode)
+            val result = JSONObject(connection.inputStream.bufferedReader().use { it.readText() })
+            if (result.optInt("code", -1) != 0) throw OcrException(502)
+        } finally { connection.disconnect() }
+    }
+
+    fun parseRecognition(body: String): RecognitionResult {
+        val envelope = JSONTokener(body).nextValue()
+        val token = if (envelope is JSONObject && envelope.has("code")) envelope.optString("feedback_token") else ""
+        return RecognitionResult(parse(body), token.takeUnless { it == "null" }.orEmpty())
     }
 
     fun parse(body: String): List<Candidate> {

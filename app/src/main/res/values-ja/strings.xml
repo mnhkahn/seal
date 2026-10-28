@@ -83,4 +83,7 @@
     <string name="up_to_date">最新バージョンです。</string>
     <string name="update_error">更新または検証に失敗しました。接続を確認し、再試行して再ダウンロードしてください。</string>
     <string name="update_unconfigured">更新サービスにこのアプリがまだ登録されていません。</string>
+    <string name="feedback_saving">フィードバックを保存中…</string>
+    <string name="feedback_error">保存できませんでした。もう一度選択して再試行してください。</string>
+    <string name="feedback_expired">画像を再認識してからフィードバックを送信してください。</string>
 </resources>

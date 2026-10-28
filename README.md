@@ -95,3 +95,7 @@ source "$HOME/.config/cyeam/signing/seal/environment.zsh"
 在 GitHub 仓库 Actions Secrets 设置 `LARK_WEBHOOK_URL`（自定义群机器人 Webhook）。发布工作流结束时发送成功、失败或取消通知：包含版本、构建详情，以及已成功发布的蒲公英 / GitHub 下载页。通知失败会显示在 Actions 日志中，不改变 APK 发布结果。Webhook 不写入仓库或日志。
 
 通知脚本验证：`python3 -m unittest discover -s scripts/tests -v`。机器人如开启关键词或签名校验，须相应配置；当前消息包含应用名“Seal 篆书识别”。
+
+## 识别反馈
+
+识别接口返回的 `feedback_token` 仅用于对应的本次识别。点击“采用此字／都不对”后，App 向 `/mo/api/ocr/feedback` 提交选择；图片关联、等待异步上传、候选校验和 ImageKit 扩展信息更新由服务端统一处理。服务端保存成功后才确认选择，失败保留重试入口。旧服务端未返回凭证或凭证过期时提示重新识别。凭证仅保存在当前识别状态中，不写入本地历史或统计。需要部署支持反馈的新服务端后才可线上使用。

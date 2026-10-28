@@ -83,4 +83,7 @@
     <string name="up_to_date">已是最新版本。</string>
     <string name="update_error">更新失败或校验未通过，请检查网络后重试获取新的下载。</string>
     <string name="update_unconfigured">更新服务尚未配置本应用。</string>
+    <string name="feedback_saving">正在保存反馈…</string>
+    <string name="feedback_error">反馈保存失败，请再次点击选择重试。</string>
+    <string name="feedback_expired">请重新识别此图片后再反馈。</string>
 </resources>

@@ -83,4 +83,7 @@
     <string name="up_to_date">Você tem a versão mais recente.</string>
     <string name="update_error">Falha na atualização ou verificação. Verifique a conexão e baixe novamente.</string>
     <string name="update_unconfigured">O app ainda não está configurado no serviço de atualizações.</string>
+    <string name="feedback_saving">Salvando feedback…</string>
+    <string name="feedback_error">Não foi possível salvar. Selecione novamente para tentar outra vez.</string>
+    <string name="feedback_expired">Reconheça esta imagem novamente antes de enviar feedback.</string>
 </resources>

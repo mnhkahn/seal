@@ -141,7 +141,7 @@ class MainActivity : AppCompatActivity() {
             if(s.total>0) content.addView(label(getString(R.string.progress,s.completed,s.total),14))
             content.addView(button(R.string.cancel,false) { model.cancel() })
         } else if(s.total>0) content.addView(label(getString(R.string.completed,s.glyphs.count { it.candidates.isNotEmpty() },s.glyphs.count { it.error!=0 }),14))
-        content.addView(button(R.string.recognize) { startRecognition() }.apply { isEnabled=!s.busy && s.glyphs.size in 1..10 })
+        content.addView(button(R.string.recognize) { startRecognition() }.apply { isEnabled=!s.busy && s.glyphs.none { it.feedbackPending } && s.glyphs.size in 1..10 })
         val text=s.glyphs.filter { it.decision!=-1 }.mapNotNull { it.candidates.getOrNull(it.selected)?.text }.joinToString("")
         if(text.isNotBlank()) {
             val result=card(); result.addView(label(getString(R.string.result),18,true))
@@ -173,15 +173,17 @@ class MainActivity : AppCompatActivity() {
             result.addView(label(candidateLabel(candidate),22,true).apply { setTextIsSelectable(true) },weight())
             panel.addView(result)
             if(candidate.work.isNotBlank()) panel.addView(label(candidate.work,12))
-            panel.addView(button(R.string.candidates,false) { candidates(index,g) }.apply { isEnabled=g.decision==0 })
+            panel.addView(button(R.string.candidates,false) { candidates(index,g) }.apply { isEnabled=!busy && g.decision==0 && !g.feedbackPending })
             val feedback=row()
-            feedback.addView(button(R.string.accept,false) { model.feedback(index,true) }.apply { isEnabled=g.decision==0 },weight())
-            feedback.addView(button(R.string.reject,false) { model.feedback(index,false) }.apply { isEnabled=g.decision==0 },weight()); panel.addView(feedback)
+            feedback.addView(button(R.string.accept,false) { model.feedback(index,true) }.apply { isEnabled=!busy && g.decision==0 && !g.feedbackPending },weight())
+            feedback.addView(button(R.string.reject,false) { model.feedback(index,false) }.apply { isEnabled=!busy && g.decision==0 && !g.feedbackPending },weight()); panel.addView(feedback)
+            if(g.feedbackPending) panel.addView(label(getString(R.string.feedback_saving),13))
+            if(g.feedbackError!=0) panel.addView(label(getString(g.feedbackError),13))
             if(g.decision!=0) panel.addView(label(getString(if(g.decision==1) R.string.accepted else R.string.rejected),13))
             panel.addView(button(R.string.dictionary,false) { openUrl("https://zi.tools/zi/"+Uri.encode(candidate.text)) })
         }
         if(g.error!=0) panel.addView(label(getString(g.error),14).apply { setTextColor(Color.rgb(164,51,37)) })
-        panel.addView(button(R.string.retry,false) { startRecognition(index) }.apply { isEnabled=!busy })
+        panel.addView(button(R.string.retry,false) { startRecognition(index) }.apply { isEnabled=!busy && model.state.value.glyphs.none { it.feedbackPending } })
         content.addView(panel)
     }
     private fun candidateLabel(c: Candidate): String {

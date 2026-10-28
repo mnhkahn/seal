@@ -83,4 +83,7 @@
     <string name="up_to_date">Die Version ist aktuell.</string>
     <string name="update_error">Update oder Prüfung fehlgeschlagen. Verbindung prüfen und neu herunterladen.</string>
     <string name="update_unconfigured">Die App ist im Update-Dienst noch nicht eingerichtet.</string>
+    <string name="feedback_saving">Rückmeldung wird gespeichert…</string>
+    <string name="feedback_error">Speichern fehlgeschlagen. Bitte erneut auswählen.</string>
+    <string name="feedback_expired">Bitte das Bild erneut erkennen lassen und dann Rückmeldung senden.</string>
 </resources>

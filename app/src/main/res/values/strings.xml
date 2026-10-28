@@ -83,4 +83,7 @@
     <string name="up_to_date">You have the latest version.</string>
     <string name="update_error">Update failed or verification did not pass. Check your connection and retry to get a fresh download.</string>
     <string name="update_unconfigured">The update service has not configured this app yet.</string>
+    <string name="feedback_saving">Saving feedback…</string>
+    <string name="feedback_error">Could not save feedback. Tap your choice to retry.</string>
+    <string name="feedback_expired">Please recognize this image again before sending feedback.</string>
 </resources>

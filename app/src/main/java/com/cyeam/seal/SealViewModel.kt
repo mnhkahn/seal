@@ -19,7 +19,8 @@ import kotlin.math.roundToInt
 
 data class Glyph(
     val box: Box, val candidates: List<Candidate> = emptyList(), val selected: Int = 0,
-    val error: Int = 0, val decision: Int = 0
+    val error: Int = 0, val decision: Int = 0, val feedbackToken: String = "",
+    val feedbackPending: Boolean = false, val feedbackError: Int = 0
 )
 data class SealState(
     val image: Bitmap? = null, val glyphs: List<Glyph> = emptyList(), val busy: Boolean = false,
@@ -89,42 +90,66 @@ class SealViewModel(app: Application) : AndroidViewModel(app) {
     fun cancel() { job?.cancel(); mutable.value = mutable.value.copy(busy = false, message = R.string.cancelled) }
     fun select(index: Int, rank: Int) {
         val list = mutable.value.glyphs.toMutableList()
-        if (list[index].decision != 0) return
+        if (list[index].decision != 0 || list[index].feedbackPending || mutable.value.busy) return
         list[index] = list[index].copy(selected = rank)
         mutable.value = mutable.value.copy(glyphs = list)
         analytics.event("seal_candidate_select", "candidate_rank" to rank + 1, "candidate_count" to list[index].candidates.size)
     }
     fun feedback(index: Int, accepted: Boolean) {
-        val list = mutable.value.glyphs.toMutableList(); val glyph = list[index]
-        if(glyph.decision != 0 || glyph.candidates.isEmpty()) return
-        list[index] = glyph.copy(decision = if(accepted) 1 else -1)
-        mutable.value = mutable.value.copy(glyphs = list)
-        analytics.event(if(accepted) "seal_result_accept" else "seal_result_reject", "candidate_rank" to if(accepted) glyph.selected + 1 else 0, "candidate_count" to glyph.candidates.size)
+        val snapshot = mutable.value
+        val glyph = snapshot.glyphs.getOrNull(index) ?: return
+        if (snapshot.busy || glyph.decision != 0 || glyph.feedbackPending || glyph.candidates.isEmpty()) return
+        if (glyph.feedbackToken.isBlank()) {
+            val list = snapshot.glyphs.toMutableList()
+            list[index] = glyph.copy(feedbackError = R.string.feedback_expired)
+            mutable.value = snapshot.copy(glyphs = list)
+            return
+        }
+        fun update(transform: (Glyph) -> Glyph) {
+            // Edits/deletions may move or replace the glyph during the request.
+            // Never attach the response to a different recognition result.
+            val current = mutable.value
+            mutable.value = current.copy(glyphs = current.glyphs.map {
+                if (it.feedbackToken == glyph.feedbackToken) transform(it) else it
+            })
+        }
+        update { it.copy(feedbackPending = true, feedbackError = 0) }
+        viewModelScope.launch {
+            try {
+                OcrClient.feedback(glyph.feedbackToken, accepted, glyph.selected + 1, glyph.candidates[glyph.selected].text)
+                update { it.copy(decision = if (accepted) 1 else -1) }
+                analytics.event(if (accepted) "seal_result_accept" else "seal_result_reject", "candidate_rank" to if (accepted) glyph.selected + 1 else 0, "candidate_count" to glyph.candidates.size)
+            } catch (e: CancellationException) { throw e }
+            catch (e: Exception) {
+                update { it.copy(feedbackError = if (e is OcrException && e.status == 400) R.string.feedback_expired else R.string.feedback_error) }
+            } finally { update { it.copy(feedbackPending = false) } }
+        }
     }
     fun recognize(only: Int? = null) {
         val snapshot = mutable.value; val image = snapshot.image ?: return
         val indices = if(only != null) listOf(only) else snapshot.glyphs.indices.toList()
-        if (snapshot.busy || indices.isEmpty() || indices.size > 10) return
+        if (snapshot.busy || snapshot.glyphs.any { it.feedbackPending } || indices.isEmpty() || indices.size > 10) return
         mutable.value = snapshot.copy(busy = true, completed = 0, total = indices.size, message = 0)
         job = viewModelScope.launch {
             var success = 0
             analytics.event("seal_recognition_start", "glyph_count" to indices.size)
             try {
                 for ((n,index) in indices.withIndex()) {
-                    val glyph = mutable.value.glyphs[index]
+                    val glyph = mutable.value.glyphs[index].copy(feedbackToken = "", feedbackError = 0)
                     val replacement = try {
                         val bytes = withContext(Dispatchers.Default) {
                             val b = glyph.box
                             val crop = Bitmap.createBitmap(image,b.x,b.y,b.width,b.height)
                             ByteArrayOutputStream().use { stream -> crop.compress(Bitmap.CompressFormat.PNG,100,stream); stream.toByteArray() }
                         }
-                        val candidates = OcrClient.recognize(bytes)
+                        val result = OcrClient.recognize(bytes)
+                        val candidates = result.candidates
                         if(candidates.isEmpty()) glyph.copy(error = R.string.no_candidates, candidates = emptyList(), decision = 0)
                         else {
                             success++
                             saveHistory(candidates)
                             analytics.event("seal_result_view", "candidate_count" to candidates.size)
-                            glyph.copy(candidates = candidates, selected = 0, error = 0, decision = 0)
+                            glyph.copy(candidates = candidates, selected = 0, error = 0, decision = 0, feedbackToken = result.feedbackToken)
                         }
                     } catch(e: CancellationException) { throw e }
                     catch(e: Exception) {

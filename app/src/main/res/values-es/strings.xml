@@ -83,4 +83,7 @@
     <string name="up_to_date">Tienes la última versión.</string>
     <string name="update_error">Error de actualización o verificación. Revisa la conexión y descarga de nuevo.</string>
     <string name="update_unconfigured">La app aún no está configurada en el servicio de actualizaciones.</string>
+    <string name="feedback_saving">Guardando comentarios…</string>
+    <string name="feedback_error">No se pudieron guardar. Vuelve a elegir para reintentar.</string>
+    <string name="feedback_expired">Reconoce esta imagen de nuevo antes de enviar comentarios.</string>
 </resources>
