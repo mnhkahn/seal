@@ -1,0 +1,12 @@
+<resources>
+    <style name="Theme.Seal" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">#A43325</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">#665C50</item>
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">#F8F4ED</item>
+        <item name="android:navigationBarColor">#F8F4ED</item>
+        <item name="android:windowBackground">#F8F4ED</item>
+    </style>
+</resources>

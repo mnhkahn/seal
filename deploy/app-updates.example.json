@@ -1,0 +1,8 @@
+[
+  {
+    "id": "seal",
+    "packageName": "com.cyeam.seal",
+    "shortcut": "REPLACE_WITH_ACTUAL_PGYER_SHORTCUT",
+    "apiKeyEnv": "PGYER_API_KEY"
+  }
+]
