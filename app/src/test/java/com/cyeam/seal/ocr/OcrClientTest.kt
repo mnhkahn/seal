@@ -4,8 +4,11 @@ import org.junit.Assert.*
 import org.junit.Test
 import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
-import com.sun.net.httpserver.HttpServer
-import java.net.InetSocketAddress
+import java.net.ServerSocket
+import java.net.SocketException
+import java.io.DataInputStream
+import java.util.concurrent.atomic.AtomicReference
+import java.util.concurrent.atomic.AtomicInteger
 
 class OcrClientTest {
     @Test fun readsWrappedJsonStringAndRanksWholeMatchesFirst() {
@@ -35,43 +38,60 @@ class OcrClientTest {
         assertEquals("", OcrClient.parseRecognition("""["女"]""").feedbackToken)
     }
     @Test fun submitsChoicesToServerAndRequiresSuccessfulSave() = runBlocking {
-        var request: JSONObject? = null
-        var status = 200
-        var body = """{"code":0}"""
-        var calls = 0
-        val server = HttpServer.create(InetSocketAddress("127.0.0.1", 0), 0)
-        server.createContext("/feedback") { exchange ->
-            calls++
-            assertEquals("POST", exchange.requestMethod)
-            request = JSONObject(exchange.requestBody.bufferedReader().use { it.readText() })
-            val response = body.toByteArray()
-            exchange.sendResponseHeaders(status, response.size.toLong())
-            exchange.responseBody.use { it.write(response) }
-        }
-        server.start()
+        val request = AtomicReference<JSONObject>()
+        val headers = AtomicReference<String>()
+        val calls = AtomicInteger()
+        val server = ServerSocket(0, 4, java.net.InetAddress.getByName("127.0.0.1"))
+        val worker = Thread {
+            try {
+                repeat(4) {
+                    server.accept().use { socket ->
+                        socket.soTimeout = 5000
+                        val input = socket.getInputStream().buffered()
+                        val header = StringBuilder()
+                        while (!header.endsWith("\r\n\r\n")) {
+                            val byte = input.read()
+                            check(byte >= 0)
+                            header.append(byte.toChar())
+                        }
+                        headers.set(header.toString())
+                        val length = header.lines().first { it.startsWith("Content-Length:", true) }.substringAfter(':').trim().toInt()
+                        val payload = ByteArray(length)
+                        DataInputStream(input).readFully(payload)
+                        request.set(JSONObject(String(payload, Charsets.UTF_8)))
+                        val call = calls.incrementAndGet()
+                        val status = if (call == 3) "409 Conflict" else "200 OK"
+                        val response = if (call == 4) """{"code":502}""" else """{"code":0}"""
+                        val bytes = response.toByteArray()
+                        socket.getOutputStream().use { output ->
+                            output.write("HTTP/1.1 $status\r\nContent-Type: application/json\r\nContent-Length: ${bytes.size}\r\nConnection: close\r\n\r\n".toByteArray())
+                            output.write(bytes)
+                        }
+                    }
+                }
+            } catch (_: SocketException) { /* Closed by test cleanup. */ }
+        }.apply { isDaemon = true; start() }
         try {
-            val endpoint = "http://127.0.0.1:${server.address.port}/feedback"
+            val endpoint = "http://127.0.0.1:${server.localPort}/feedback"
             OcrClient.feedback("image-token", true, 2, "𢇷", endpoint)
-            assertEquals("image-token", request!!.getString("token"))
-            assertEquals("accepted", request!!.getString("decision"))
-            assertEquals(2, request!!.getInt("candidate_rank"))
-            assertEquals("𢇷", request!!.getString("character"))
+            assertTrue(headers.get().startsWith("POST /feedback HTTP/1.1"))
+            assertEquals("image-token", request.get().getString("token"))
+            assertEquals("accepted", request.get().getString("decision"))
+            assertEquals(2, request.get().getInt("candidate_rank"))
+            assertEquals("𢇷", request.get().getString("character"))
             OcrClient.feedback("image-token", false, 2, "𢇷", endpoint)
-            assertEquals("rejected", request!!.getString("decision"))
-            assertEquals(0, request!!.getInt("candidate_rank"))
-            assertEquals("", request!!.getString("character"))
-            status = 409
+            assertEquals("rejected", request.get().getString("decision"))
+            assertEquals(0, request.get().getInt("candidate_rank"))
+            assertEquals("", request.get().getString("character"))
             try {
                 OcrClient.feedback("image-token", false, 0, "", endpoint)
                 fail("pending upload must not be treated as a saved decision")
             } catch (e: OcrException) { assertEquals(409, e.status) }
-            assertEquals(3, calls) // Upload waiting is owned by the server.
-            status = 200
-            body = """{"code":502}"""
+            assertEquals(3, calls.get()) // Upload waiting is owned by the server.
             try {
                 OcrClient.feedback("image-token", true, 1, "女", endpoint)
                 fail("unsuccessful response must not be accepted")
             } catch (e: OcrException) { assertEquals(502, e.status) }
-        } finally { server.stop(0) }
+        } finally { server.close(); worker.join(1000) }
     }
 }
