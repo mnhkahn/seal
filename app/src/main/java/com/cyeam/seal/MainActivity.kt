@@ -219,7 +219,7 @@ class MainActivity : AppCompatActivity() {
                 minWidth=0; minimumWidth=0
                 cornerRadius=dp(6)
                 contentDescription=getString(R.string.dictionary)
-                setOnClickListener { openUrl("https://zi.tools/zi/"+Uri.encode(candidate.text)) }
+                setOnClickListener { openUrl("https://www.cyeam.com/mo/guwen?mode=gallery&char="+Uri.encode(candidate.text)+"&font=zhuanShu") }
             },LinearLayout.LayoutParams(dp(52),dp(56)).apply { marginStart=dp(8) })
             panel.addView(controls)
             val feedback=row()
