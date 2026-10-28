@@ -18,15 +18,15 @@ android {
     }
     signingConfigs {
         create("release") {
-            System.getenv("KEYSTORE_FILE")?.let { storeFile = file(it) }
-            storePassword = System.getenv("KEYSTORE_PASSWORD")
-            keyAlias = System.getenv("KEY_ALIAS")
-            keyPassword = System.getenv("KEY_PASSWORD")
+            (System.getenv("SEAL_KEYSTORE_FILE") ?: System.getenv("KEYSTORE_FILE"))?.let { storeFile = file(it) }
+            storePassword = (System.getenv("SEAL_KEYSTORE_PASSWORD") ?: System.getenv("KEYSTORE_PASSWORD"))
+            keyAlias = (System.getenv("SEAL_KEY_ALIAS") ?: System.getenv("KEY_ALIAS"))
+            keyPassword = (System.getenv("SEAL_KEY_PASSWORD") ?: System.getenv("KEY_PASSWORD"))
         }
     }
     buildTypes {
         release {
-            if (System.getenv("KEYSTORE_FILE") != null) signingConfig = signingConfigs.getByName("release")
+            if ((System.getenv("SEAL_KEYSTORE_FILE") ?: System.getenv("KEYSTORE_FILE")) != null) signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")

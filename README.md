@@ -45,6 +45,15 @@ sdk.dir=/your/Android/sdk
 
 正式版本通过环境变量设置 `KEYSTORE_FILE`、`KEYSTORE_PASSWORD`、`KEY_ALIAS`、`KEY_PASSWORD`，保留同一签名密钥。未提供签名时 `assembleRelease` 仅生成 unsigned APK。
 
+本地也支持优先读取 `SEAL_KEYSTORE_FILE`、`SEAL_KEYSTORE_PASSWORD`、`SEAL_KEY_ALIAS`、`SEAL_KEY_PASSWORD`，避免影响其他 Android 项目的签名。当前开发机的私有配置位于 `$HOME/.config/cyeam/signing/seal/environment.zsh`（权限 600），通过 `.zshenv` 自动加载到新终端；已打开的终端可手动执行：
+
+```sh
+source "$HOME/.config/cyeam/signing/seal/environment.zsh"
+```
+
+配置同时保存 `SEAL_RELEASE_KEYSTORE_BASE64`，供恢复 CI Secret 使用。私有配置和密钥均在仓库之外，不提交到 Git。
+
+
 ```sh
 ./gradlew :app:assembleRelease -PreleaseVersionName=1.0.0 -PreleaseVersionCode=1001
 ```
