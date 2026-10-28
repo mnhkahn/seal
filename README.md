@@ -89,3 +89,9 @@ source "$HOME/.config/cyeam/signing/seal/environment.zsh"
 - 应用内切换日语成功，切换时保留原图、单字框与识别结果；重装最新 Debug 后日语偏好仍保留。
 - Firebase 本机事件日志确认识别开始、结果展示、识别完成事件，Google Analytics 上传返回 HTTP 204；未人工查看 Firebase Console。
 - 线上更新接口当前返回 app_not_found；未进行真实升级安装，也未部署任何服务。
+
+## 飞书发布通知
+
+在 GitHub 仓库 Actions Secrets 设置 `LARK_WEBHOOK_URL`（自定义群机器人 Webhook）。发布工作流结束时发送成功、失败或取消通知：包含版本、构建详情，以及已成功发布的蒲公英 / GitHub 下载页。通知失败会显示在 Actions 日志中，不改变 APK 发布结果。Webhook 不写入仓库或日志。
+
+通知脚本验证：`python3 -m unittest discover -s scripts/tests -v`。机器人如开启关键词或签名校验，须相应配置；当前消息包含应用名“Seal 篆书识别”。

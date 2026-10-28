@@ -26,6 +26,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Test release notification
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python3 -m unittest discover -s scripts/tests -v
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -86,11 +90,13 @@ jobs:
           if-no-files-found: error
 
       - name: Publish to Pgyer
+        id: pgyer
         env:
           PGYER_API_KEY: ${{ secrets.PGYER_API_KEY }}
         run: bash scripts/publish-pgyer.sh artifacts/Seal-release.apk artifacts/release-notes.md
 
       - name: Create GitHub Release
+        id: github_release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
@@ -100,3 +106,15 @@ jobs:
       - name: Clean up signing file
         if: always()
         run: rm -f "$RUNNER_TEMP/release.keystore"
+
+      - name: Notify Lark
+        if: always()
+        timeout-minutes: 2
+        continue-on-error: true
+        env:
+          LARK_WEBHOOK_URL: ${{ secrets.LARK_WEBHOOK_URL }}
+          RELEASE_STATUS: ${{ job.status }}
+          RELEASE_VERSION: ${{ env.RELEASE_VERSION || inputs.version || github.ref_name }}
+          PGYER_OUTCOME: ${{ steps.pgyer.outcome }}
+          GITHUB_RELEASE_OUTCOME: ${{ steps.github_release.outcome }}
+        run: python3 scripts/notify-lark.py
