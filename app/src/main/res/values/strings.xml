@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="photo_short">Photo</string>
+    <string name="camera_short">Camera</string>
+    <string name="write_short">Write</string>
     <string name="app_name">Seal · Seal Script OCR</string>
     <string name="subtitle">Read the marks of history</string>
     <string name="welcome">Ancient forms. New understanding.</string>

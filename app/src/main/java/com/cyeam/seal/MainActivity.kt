@@ -50,7 +50,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var content: LinearLayout
     private lateinit var sourceButtons: LinearLayout
     private lateinit var clipboardImages: ClipboardImagePrompt
-    private lateinit var handwritingButton: MaterialButton
     private var handwritingOpen=false
     private var handwritingDialog: androidx.appcompat.app.AlertDialog?=null
     private var manualUpdateCheck=false
@@ -83,26 +82,24 @@ class MainActivity : AppCompatActivity() {
         val header=row()
         header.addView(ImageView(this).apply {
             setImageResource(R.drawable.seal_logo)
-            contentDescription=getString(R.string.app_name)+", "+getString(R.string.check_update)
-            tooltipText=getString(R.string.check_update)
+            contentDescription=getString(R.string.app_name)+", "+getString(R.string.settings)
+            tooltipText=getString(R.string.settings)
             isFocusable=true
-            setOnClickListener { checkUpdateManually() }
+            setOnClickListener { settings() }
         },LinearLayout.LayoutParams(dp(56),dp(56)))
         val heading=column(0).apply { setPadding(dp(14),0,0,0); addView(label(getString(R.string.app_name),26,true)); addView(label(getString(R.string.subtitle),12)) }
         header.addView(heading,LinearLayout.LayoutParams(0,-2,1f)); body.addView(header)
-        val nav=row()
-        nav.addView(button(R.string.history,false) { history() },weight())
-        nav.addView(button(R.string.settings,false) { settings() },weight()); body.addView(nav)
         sourceButtons=row()
-        sourceButtons.addView(button(R.string.choose_photo) { picker.launch(androidx.activity.result.PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },weight())
-        sourceButtons.addView(button(R.string.take_photo,false) { takePhoto() },weight()); body.addView(sourceButtons)
-        handwritingButton=button(R.string.handwriting,false) { showHandwriting() }
-        body.addView(handwritingButton)
+        sourceButtons.addView(sourceButton(R.string.photo_short,R.string.choose_photo,true) { picker.launch(androidx.activity.result.PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },weight())
+        sourceButtons.addView(sourceButton(R.string.camera_short,R.string.take_photo) { takePhoto() },weight())
+        sourceButtons.addView(sourceButton(R.string.write_short,R.string.handwriting) { showHandwriting() },weight())
+        sourceButtons.addView(sourceButton(R.string.history,R.string.history) { history() },weight())
+        body.addView(sourceButtons)
         content=column(0); body.addView(content)
         clipboardImages=ClipboardImagePrompt(this,
             canImport={ !handwritingOpen && !model.state.value.busy && model.state.value.glyphs.none { it.feedbackPending } },
             hasImage={ model.state.value.image!=null },
-            onImport={ model.load(it) })
+            onImport={ model.loadClipboardImage(it) })
         if(handwritingOpen) window.decorView.post { showHandwriting() }
         lifecycleScope.launch { repeatOnLifecycle(Lifecycle.State.STARTED) {
             launch { model.state.collect { render(it) } }
@@ -111,7 +108,7 @@ class MainActivity : AppCompatActivity() {
     }
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        if(hasFocus && ::clipboardImages.isInitialized) window.decorView.post { clipboardImages.check() }
+        if(::clipboardImages.isInitialized) clipboardImages.onWindowFocusChanged(hasFocus)
     }
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean("handwriting_open",handwritingOpen)
@@ -133,7 +130,6 @@ class MainActivity : AppCompatActivity() {
         content.removeAllViews()
         val locked=s.busy || s.glyphs.any { it.feedbackPending }
         for(i in 0 until sourceButtons.childCount) sourceButtons.getChildAt(i).isEnabled=!locked
-        handwritingButton.isEnabled=!locked
         if(s.image==null) {
             val welcome=card()
             welcome.addView(label(getString(R.string.welcome),23,true))
@@ -397,5 +393,12 @@ class MainActivity : AppCompatActivity() {
     private fun button(id: Int,primary: Boolean=true,action: ()->Unit): MaterialButton {
         val style=if(primary) com.google.android.material.R.attr.materialButtonStyle else com.google.android.material.R.attr.materialButtonOutlinedStyle
         return MaterialButton(this,null,style).apply { setText(id); isAllCaps=false; minHeight=dp(48); cornerRadius=dp(12); setOnClickListener { action() } }
+    }
+    private fun sourceButton(id: Int,description: Int,primary: Boolean=false,action: ()->Unit)=button(id,primary,action).apply {
+        contentDescription=getString(description)
+        minWidth=0; minimumWidth=0
+        setPadding(dp(4),0,dp(4),0)
+        maxLines=1
+        androidx.core.widget.TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(this,10,14,1,android.util.TypedValue.COMPLEX_UNIT_SP)
     }
 }

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="photo_short">Foto</string>
+    <string name="camera_short">Câmera</string>
+    <string name="write_short">Escrever</string>
     <string name="app_name">Seal · Escrita de selo</string>
     <string name="subtitle">Leia as marcas da história</string>
     <string name="welcome">Decifre formas antigas.</string>

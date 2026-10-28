@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="photo_short">选图</string>
+    <string name="camera_short">拍照</string>
+    <string name="write_short">手写</string>
     <string name="app_name">篆书识别</string>
     <string name="subtitle">读懂古文字之美</string>
     <string name="welcome">古老字形，今日读懂。</string>

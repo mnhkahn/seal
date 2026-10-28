@@ -41,6 +41,15 @@ class SealViewModel(app: Application) : AndroidViewModel(app) {
     private var job: Job? = null
     val historyFile = File(app.filesDir, "history.json")
 
+    fun loadClipboardImage(bitmap: Bitmap) {
+        val current = mutable.value
+        if (current.busy || current.glyphs.any { it.feedbackPending }) return
+        boxEditor.reset(emptyList()); boxViewport.reset()
+        mutable.value = SealState(image = bitmap, vertical = current.vertical, ink = current.ink)
+        analytics.event("seal_image_import")
+        segment()
+    }
+
     fun load(uri: Uri) {
         if (mutable.value.busy) return
         mutable.value = mutable.value.copy(busy = true, message = 0)

@@ -4,6 +4,9 @@ from xml.sax.saxutils import escape
 # English, Simplified Chinese, Traditional Chinese, Japanese, Korean, French, German, Spanish, Portuguese, Russian.
 locales=['','zh-rCN','zh-rTW','ja','ko','fr','de','es','pt','ru']
 rows=r'''
+photo_short|Photo|选图|選圖|写真|사진|Photo|Foto|Foto|Foto|Фото
+camera_short|Camera|拍照|拍照|撮影|촬영|Caméra|Kamera|Cámara|Câmera|Камера
+write_short|Write|手写|手寫|手書き|손글씨|Écrire|Schreiben|Escribir|Escrever|Писать
 app_name|Seal · Seal Script OCR|篆书识别|篆書識別|篆書認識|전서 인식|Seal · Écriture sigillaire|Seal · Siegelschrift|Seal · Escritura de sello|Seal · Escrita de selo|Seal · Распознавание печатей
 subtitle|Read the marks of history|读懂古文字之美|讀懂古文字之美|古文字の美を読み解く|옛 문자의 아름다움을 읽다|Lire les traces du passé|Die Spuren der Geschichte lesen|Lee las huellas del pasado|Leia as marcas da história|Читайте следы истории
 welcome|Ancient forms. New understanding.|古老字形，今日读懂。|古老字形，今日讀懂。|古い文字に、新しい理解を。|오래된 글자, 새로운 이해.|Des formes anciennes à déchiffrer.|Alte Zeichen neu verstehen.|Descifra formas antiguas.|Decifre formas antigas.|Откройте смысл древних знаков.

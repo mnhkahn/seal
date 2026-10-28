@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="photo_short">写真</string>
+    <string name="camera_short">撮影</string>
+    <string name="write_short">手書き</string>
     <string name="app_name">篆書認識</string>
     <string name="subtitle">古文字の美を読み解く</string>
     <string name="welcome">古い文字に、新しい理解を。</string>

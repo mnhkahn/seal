@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="photo_short">사진</string>
+    <string name="camera_short">촬영</string>
+    <string name="write_short">손글씨</string>
     <string name="app_name">전서 인식</string>
     <string name="subtitle">옛 문자의 아름다움을 읽다</string>
     <string name="welcome">오래된 글자, 새로운 이해.</string>

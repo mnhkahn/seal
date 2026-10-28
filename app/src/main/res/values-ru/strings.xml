@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="photo_short">Фото</string>
+    <string name="camera_short">Камера</string>
+    <string name="write_short">Писать</string>
     <string name="app_name">Seal · Распознавание печатей</string>
     <string name="subtitle">Читайте следы истории</string>
     <string name="welcome">Откройте смысл древних знаков.</string>
