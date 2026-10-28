@@ -38,7 +38,7 @@
     <string name="cancel">취소</string>
     <string name="close">닫기</string>
     <string name="continue_action">계속</string>
-    <string name="candidates">후보 비교</string>
+    <string name="candidates">후보 문자 선택</string>
     <string name="reference_glyph">참고 자형</string>
     <string name="accept">이 글자 채택</string>
     <string name="reject">정답 없음</string>

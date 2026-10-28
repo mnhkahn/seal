@@ -42,7 +42,7 @@ save|Save|保存|儲存|保存|저장|Enregistrer|Speichern|Guardar|Salvar|Со�
 cancel|Cancel|取消|取消|キャンセル|취소|Annuler|Abbrechen|Cancelar|Cancelar|Отмена
 close|Close|关闭|關閉|閉じる|닫기|Fermer|Schließen|Cerrar|Fechar|Закрыть
 continue_action|Continue|继续|繼續|続ける|계속|Continuer|Weiter|Continuar|Continuar|Продолжить
-candidates|Compare candidates|比较候选字|比較候選字|候補を比較|후보 비교|Comparer les candidats|Kandidaten vergleichen|Comparar candidatos|Comparar candidatos|Сравнить варианты
+candidates|Choose a character|选择候选汉字|選擇候選漢字|候補の文字を選択|후보 문자 선택|Choisir un caractère|Zeichen auswählen|Elegir un carácter|Escolher um caractere|Выбрать знак
 reference_glyph|Reference glyph|参考字形|參考字形|参考字形|참고 자형|Forme de référence|Referenzzeichen|Glifo de referencia|Glifo de referência|Эталонное начертание
 accept|Use this character|采用此字|採用此字|この文字を採用|이 글자 채택|Utiliser ce caractère|Dieses Zeichen nutzen|Usar este carácter|Usar este caractere|Выбрать этот знак
 reject|None are correct|都不对|都不對|該当なし|정답 없음|Aucun ne convient|Keiner stimmt|Ninguno es correcto|Nenhum está correto|Нет верного варианта
@@ -87,6 +87,9 @@ install_permission|Allow this app to install updates in Android Settings. Return
 up_to_date|You have the latest version.|已是最新版本。|已是最新版本。|最新バージョンです。|최신 버전입니다.|Vous avez la dernière version.|Die Version ist aktuell.|Tienes la última versión.|Você tem a versão mais recente.|Установлена последняя версия.
 update_error|Update failed or verification did not pass. Check your connection and retry to get a fresh download.|更新失败或校验未通过，请检查网络后重试获取新的下载。|更新失敗或驗證未通過，請檢查網路後重試取得新的下載。|更新または検証に失敗しました。接続を確認し、再試行して再ダウンロードしてください。|업데이트 또는 검증에 실패했습니다. 연결을 확인하고 새로 다운로드하세요.|Échec de mise à jour ou de vérification. Vérifiez la connexion et réessayez.|Update oder Prüfung fehlgeschlagen. Verbindung prüfen und neu herunterladen.|Error de actualización o verificación. Revisa la conexión y descarga de nuevo.|Falha na atualização ou verificação. Verifique a conexão e baixe novamente.|Ошибка обновления или проверки. Проверьте подключение и загрузите заново.
 update_unconfigured|The update service has not configured this app yet.|更新服务尚未配置本应用。|更新服務尚未設定本應用程式。|更新サービスにこのアプリがまだ登録されていません。|업데이트 서비스에 이 앱이 아직 설정되지 않았습니다.|Cette application n’est pas encore configurée sur le service de mise à jour.|Die App ist im Update-Dienst noch nicht eingerichtet.|La app aún no está configurada en el servicio de actualizaciones.|O app ainda não está configurado no serviço de atualizações.|Приложение пока не настроено в сервисе обновлений.
+feedback_saving|Saving feedback…|正在保存反馈…|正在儲存回饋…|フィードバックを保存中…|피드백 저장 중…|Enregistrement du retour…|Rückmeldung wird gespeichert…|Guardando comentarios…|Salvando feedback…|Сохранение отзыва…
+feedback_error|Could not save feedback. Tap your choice to retry.|反馈保存失败，请再次点击选择重试。|回饋儲存失敗，請再次點選重試。|保存できませんでした。もう一度選択して再試行してください。|저장하지 못했습니다. 다시 선택해 재시도하세요.|Échec de l’enregistrement. Sélectionnez à nouveau pour réessayer.|Speichern fehlgeschlagen. Bitte erneut auswählen.|No se pudieron guardar. Vuelve a elegir para reintentar.|Não foi possível salvar. Selecione novamente para tentar outra vez.|Не удалось сохранить. Выберите ещё раз, чтобы повторить.
+feedback_expired|Please recognize this image again before sending feedback.|请重新识别此图片后再反馈。|請重新識別此圖片後再回饋。|画像を再認識してからフィードバックを送信してください。|이미지를 다시 인식한 후 피드백을 보내 주세요.|Relancez la reconnaissance de cette image avant de donner votre avis.|Bitte das Bild erneut erkennen lassen und dann Rückmeldung senden.|Reconoce esta imagen de nuevo antes de enviar comentarios.|Reconheça esta imagem novamente antes de enviar feedback.|Распознайте изображение заново перед отправкой отзыва.
 '''.strip().splitlines()
 parsed=[]
 for row in rows:

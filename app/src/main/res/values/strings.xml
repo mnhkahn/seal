@@ -38,7 +38,7 @@
     <string name="cancel">Cancel</string>
     <string name="close">Close</string>
     <string name="continue_action">Continue</string>
-    <string name="candidates">Compare candidates</string>
+    <string name="candidates">Choose a character</string>
     <string name="reference_glyph">Reference glyph</string>
     <string name="accept">Use this character</string>
     <string name="reject">None are correct</string>

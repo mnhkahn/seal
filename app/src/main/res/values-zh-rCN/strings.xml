@@ -38,7 +38,7 @@
     <string name="cancel">取消</string>
     <string name="close">关闭</string>
     <string name="continue_action">继续</string>
-    <string name="candidates">比较候选字</string>
+    <string name="candidates">选择候选汉字</string>
     <string name="reference_glyph">参考字形</string>
     <string name="accept">采用此字</string>
     <string name="reject">都不对</string>

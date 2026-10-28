@@ -38,7 +38,7 @@
     <string name="cancel">Отмена</string>
     <string name="close">Закрыть</string>
     <string name="continue_action">Продолжить</string>
-    <string name="candidates">Сравнить варианты</string>
+    <string name="candidates">Выбрать знак</string>
     <string name="reference_glyph">Эталонное начертание</string>
     <string name="accept">Выбрать этот знак</string>
     <string name="reject">Нет верного варианта</string>

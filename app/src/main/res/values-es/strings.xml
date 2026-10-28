@@ -38,7 +38,7 @@
     <string name="cancel">Cancelar</string>
     <string name="close">Cerrar</string>
     <string name="continue_action">Continuar</string>
-    <string name="candidates">Comparar candidatos</string>
+    <string name="candidates">Elegir un carácter</string>
     <string name="reference_glyph">Glifo de referencia</string>
     <string name="accept">Usar este carácter</string>
     <string name="reject">Ninguno es correcto</string>

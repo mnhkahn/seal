@@ -46,9 +46,10 @@ class MainActivity : AppCompatActivity() {
     private val updates: AppUpdateViewModel by viewModels()
     private lateinit var body: LinearLayout
     private lateinit var content: LinearLayout
-    private lateinit var updatePanel: LinearLayout
     private lateinit var sourceButtons: LinearLayout
     private var sessionConsent=false
+    private var manualUpdateCheck=false
+    private var lastPromptedUpdate: String?=null
     private val imageLoader by lazy { ImageLoader.Builder(this).components { add(SvgDecoder.Factory()) }.build() }
     private val picker=registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri -> uri?.let { model.load(it) } }
     private val camera=registerForActivityResult(ActivityResultContracts.TakePicture()) { ok ->
@@ -60,6 +61,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         sessionConsent=savedInstanceState?.getBoolean("upload_consent") ?: false
+        manualUpdateCheck=savedInstanceState?.getBoolean("manual_update_check") ?: false
+        lastPromptedUpdate=savedInstanceState?.getString("prompted_update")
         model.cameraUri=(savedInstanceState?.getString("camera_uri")?.let(Uri::parse)) ?: model.cameraUri
         val root=column(0)
         root.setBackgroundColor(Color.rgb(248,244,237))
@@ -73,7 +76,13 @@ class MainActivity : AppCompatActivity() {
         setContentView(root)
         WindowInsetsControllerCompat(window,root).apply { isAppearanceLightStatusBars=true; isAppearanceLightNavigationBars=true }
         val header=row()
-        header.addView(ImageView(this).apply { setImageResource(R.drawable.seal_logo); contentDescription=getString(R.string.app_name) },LinearLayout.LayoutParams(dp(56),dp(56)))
+        header.addView(ImageView(this).apply {
+            setImageResource(R.drawable.seal_logo)
+            contentDescription=getString(R.string.app_name)+", "+getString(R.string.check_update)
+            tooltipText=getString(R.string.check_update)
+            isFocusable=true
+            setOnClickListener { checkUpdateManually() }
+        },LinearLayout.LayoutParams(dp(56),dp(56)))
         val heading=column(0).apply { setPadding(dp(14),0,0,0); addView(label(getString(R.string.app_name),26,true)); addView(label(getString(R.string.subtitle),12)) }
         header.addView(heading,LinearLayout.LayoutParams(0,-2,1f)); body.addView(header)
         val nav=row()
@@ -83,14 +92,15 @@ class MainActivity : AppCompatActivity() {
         sourceButtons.addView(button(R.string.choose_photo) { picker.launch(androidx.activity.result.PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },weight())
         sourceButtons.addView(button(R.string.take_photo,false) { takePhoto() },weight()); body.addView(sourceButtons)
         content=column(0); body.addView(content)
-        updatePanel=column(0); body.addView(updatePanel)
         lifecycleScope.launch { repeatOnLifecycle(Lifecycle.State.STARTED) {
             launch { model.state.collect { render(it) } }
-            launch { updates.state.collect { renderUpdate(it) } }
+            launch { updates.state.collect { handleUpdate(it) } }
         } }
     }
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean("upload_consent",sessionConsent)
+        outState.putBoolean("manual_update_check",manualUpdateCheck)
+        outState.putString("prompted_update",lastPromptedUpdate)
         outState.putString("camera_uri",model.cameraUri?.toString())
         super.onSaveInstanceState(outState)
     }
@@ -164,49 +174,49 @@ class MainActivity : AppCompatActivity() {
         },LinearLayout.LayoutParams(-1,dp(136)))
         val candidate=g.candidates.getOrNull(g.selected)
         if(candidate!=null) {
-            val result=row()
-            val url=candidate.glyphImage.ifEmpty { candidate.unicodeImage }
-            if(url.isNotEmpty()) result.addView(ImageView(this).apply {
-                contentDescription=getString(R.string.reference_glyph)
-                load(url,imageLoader)
-            },LinearLayout.LayoutParams(dp(54),dp(54)))
-            result.addView(label(candidateLabel(candidate),22,true).apply { setTextIsSelectable(true) },weight())
-            panel.addView(result)
-            if(candidate.work.isNotBlank()) panel.addView(label(candidate.work,12))
-            panel.addView(button(R.string.candidates,false) { candidates(index,g) }.apply { isEnabled=!busy && g.decision==0 && !g.feedbackPending })
+            val controls=row()
+            controls.addView(CandidateDropdown(this,g.candidates,g.selected,imageLoader,::candidateLabel) { rank ->
+                model.select(index,rank)
+            }.apply {
+                isEnabled=!busy && g.decision==0 && !g.feedbackPending
+                alpha=if(isEnabled) 1f else .6f
+            },LinearLayout.LayoutParams(0,-2,1f))
+            controls.addView(MaterialButton(this,null,com.google.android.material.R.attr.materialButtonOutlinedStyle).apply {
+                icon=androidx.appcompat.content.res.AppCompatResources.getDrawable(this@MainActivity,R.drawable.ic_open_in_new)
+                iconTint=android.content.res.ColorStateList.valueOf(Color.rgb(108,117,125))
+                iconGravity=MaterialButton.ICON_GRAVITY_TEXT_START
+                iconPadding=0
+                insetTop=0; insetBottom=0
+                setPadding(dp(14),0,dp(14),0)
+                minWidth=0; minimumWidth=0
+                cornerRadius=dp(6)
+                contentDescription=getString(R.string.dictionary)
+                setOnClickListener { openUrl("https://zi.tools/zi/"+Uri.encode(candidate.text)) }
+            },LinearLayout.LayoutParams(dp(52),dp(56)).apply { marginStart=dp(8) })
+            panel.addView(controls)
             val feedback=row()
             feedback.addView(button(R.string.accept,false) { model.feedback(index,true) }.apply { isEnabled=!busy && g.decision==0 && !g.feedbackPending },weight())
             feedback.addView(button(R.string.reject,false) { model.feedback(index,false) }.apply { isEnabled=!busy && g.decision==0 && !g.feedbackPending },weight()); panel.addView(feedback)
             if(g.feedbackPending) panel.addView(label(getString(R.string.feedback_saving),13))
             if(g.feedbackError!=0) panel.addView(label(getString(g.feedbackError),13))
             if(g.decision!=0) panel.addView(label(getString(if(g.decision==1) R.string.accepted else R.string.rejected),13))
-            panel.addView(button(R.string.dictionary,false) { openUrl("https://zi.tools/zi/"+Uri.encode(candidate.text)) })
         }
         if(g.error!=0) panel.addView(label(getString(g.error),14).apply { setTextColor(Color.rgb(164,51,37)) })
         panel.addView(button(R.string.retry,false) { startRecognition(index) }.apply { isEnabled=!busy && model.state.value.glyphs.none { it.feedbackPending } })
         content.addView(panel)
     }
     private fun candidateLabel(c: Candidate): String {
-        val match=when(c.matchType) { "whole" -> getString(R.string.whole_match); "component" -> getString(R.string.component_match); else -> "" }
-        val standard=if(c.text=="䝿" || c.text=="貴") " · "+getString(R.string.standard_character,"贵") else ""
-        val unicode=c.codepoint.ifEmpty { c.text.codePoints().toArray().joinToString(" ") { "U+%04X".format(it) } }
-        val score=c.score?.let { " · "+String.format(resources.configuration.locales[0],"%.1f%%",it*100) }.orEmpty()
-        return c.text+standard+" · "+unicode+(if(match.isEmpty()) "" else " · $match")+score
-    }
-    private fun candidates(index: Int,g: Glyph) {
-        val list=column(12)
-        val dialog=MaterialAlertDialogBuilder(this).setTitle(R.string.candidates).setNegativeButton(R.string.close,null).create()
-        g.candidates.forEachIndexed { rank,c ->
-            val line=row()
-            for(url in listOf(c.glyphImage,c.unicodeImage).distinct().filter { it.isNotBlank() }) line.addView(ImageView(this).apply {
-                contentDescription=getString(R.string.reference_glyph); load(url,imageLoader)
-            },LinearLayout.LayoutParams(dp(44),dp(44)))
-            line.addView(label(candidateLabel(c),17),weight())
-            line.minimumHeight=dp(64); line.isClickable=true; line.isFocusable=true
-            line.setOnClickListener { model.select(index,rank); dialog.dismiss() }
-            list.addView(line)
+        val match=when(c.matchType) {
+            "whole" -> getString(R.string.whole_match)
+            "component" -> getString(R.string.component_match)+(if(c.component.isNotBlank()) " · "+c.component else "")
+            else -> ""
         }
-        dialog.setView(ScrollView(this).apply { addView(list) }); dialog.show()
+        val standard=if(c.text=="䝿" || c.text=="貴") "（"+getString(R.string.standard_character,"贵")+"）" else ""
+        val score=c.score?.let { String.format(resources.configuration.locales[0],"%.1f%%",it*100) }.orEmpty()
+        // As on the website, use the Unicode reference image for rare characters
+        // instead of showing a missing-font square alongside it.
+        val character=if(c.unicodeImage.isNotBlank()) "" else c.text
+        return listOf(character+standard,match,score).filter { it.isNotBlank() }.joinToString(" · ")
     }
     private fun crop(index: Int?) {
         val s=model.state.value; val image=s.image ?: return
@@ -252,7 +262,7 @@ class MainActivity : AppCompatActivity() {
             setOnCheckedChangeListener { _,enabled -> model.analytics.enabled=enabled }
         })
         list.addView(label(getString(R.string.analytics_notice),13))
-        list.addView(button(R.string.check_update,false) { updates.checkForUpdate() })
+        list.addView(button(R.string.check_update,false) { checkUpdateManually() })
         list.addView(label(getString(R.string.update_notice),13))
         list.addView(button(R.string.privacy,false) {
             MaterialAlertDialogBuilder(this).setTitle(R.string.privacy).setMessage(R.string.privacy_details).setPositiveButton(R.string.close,null).show()
@@ -267,17 +277,38 @@ class MainActivity : AppCompatActivity() {
             d.dismiss(); AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(codes[i]))
         }.setNegativeButton(R.string.cancel,null).show()
     }
-    private fun renderUpdate(s: UpdateState) {
-        updatePanel.removeAllViews()
-        if(s.stage==UpdateStage.IDLE && s.message==0) return
-        val panel=card(); panel.addView(label(getString(R.string.app_update),16,true))
-        if(s.version.isNotBlank()) panel.addView(label(s.version,16,true))
-        if(s.message!=0) panel.addView(label(getString(s.message),13))
-        if(s.notes.isNotBlank()) panel.addView(label(s.notes,13))
-        if(s.stage==UpdateStage.DOWNLOADING) panel.addView(ProgressBar(this,null,android.R.attr.progressBarStyleHorizontal).apply { max=100; progress=s.progress })
-        if(s.stage==UpdateStage.READY) panel.addView(button(R.string.install_update) { installUpdate() })
-        if(s.stage==UpdateStage.FAILED) panel.addView(button(R.string.check_update,false) { updates.checkForUpdate() })
-        updatePanel.addView(panel)
+    private fun checkUpdateManually() {
+        val state=updates.state.value
+        when(state.stage) {
+            UpdateStage.READY -> showReadyUpdate(state)
+            UpdateStage.CHECKING -> {
+                manualUpdateCheck=true
+                toast(R.string.checking_update)
+            }
+            UpdateStage.DOWNLOADING -> toast(if(state.message!=0) state.message else R.string.downloading_update)
+            else -> {
+                manualUpdateCheck=true
+                toast(R.string.checking_update)
+                updates.checkForUpdate()
+            }
+        }
+    }
+    private fun handleUpdate(state: UpdateState) {
+        // Startup checks remain quiet unless a verified APK is ready to install.
+        if(state.stage==UpdateStage.READY) {
+            manualUpdateCheck=false
+            if(lastPromptedUpdate!=state.version) showReadyUpdate(state)
+        } else if(manualUpdateCheck && state.stage!=UpdateStage.CHECKING) {
+            manualUpdateCheck=false
+            if(state.message!=0) toast(state.message)
+        }
+    }
+    private fun showReadyUpdate(state: UpdateState) {
+        lastPromptedUpdate=state.version
+        MaterialAlertDialogBuilder(this).setTitle(R.string.app_update)
+            .setMessage(listOf(state.version,state.notes,getString(R.string.update_ready)).filter { it.isNotBlank() }.joinToString("\n\n"))
+            .setNegativeButton(R.string.close,null)
+            .setPositiveButton(R.string.install_update) { _,_ -> installUpdate() }.show()
     }
     private fun installUpdate() {
         if(!packageManager.canRequestPackageInstalls()) {
