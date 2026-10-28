@@ -86,4 +86,25 @@
     <string name="feedback_saving">正在儲存回饋…</string>
     <string name="feedback_error">回饋儲存失敗，請再次點選重試。</string>
     <string name="feedback_expired">請重新識別此圖片後再回饋。</string>
+    <string name="clipboard_image_title">發現剪貼簿圖片</string>
+    <string name="clipboard_image_message">是否使用這張圖片進行分字？</string>
+    <string name="clipboard_replace_image">使用後將取代目前的圖片。</string>
+    <string name="clipboard_use_image">使用圖片</string>
+    <string name="handwriting">手寫單字</string>
+    <string name="handwriting_single">每次只寫一個完整篆字。提交後上傳整張字圖識別，不自動分字。</string>
+    <string name="handwriting_submit">提交單字並識別</string>
+    <string name="undo_stroke">復原上一筆</string>
+    <string name="clear_drawing">清空</string>
+    <string name="stroke_count">已寫 %1$d 筆</string>
+    <string name="box_editor_hint">點擊字框選取，拖曳框內移動，拖曳邊角調整大小。</string>
+    <string name="split_horizontal">左右拆分</string>
+    <string name="split_vertical">上下拆分</string>
+    <string name="delete_box">刪除字框</string>
+    <string name="undo_edit">復原</string>
+    <string name="confirm_segments">確認分字並識別</string>
+    <string name="back_to_boxes">返回調整字框</string>
+    <string name="fit_image">全圖</string>
+    <string name="zoom_in">放大</string>
+    <string name="zoom_out">縮小</string>
+    <string name="recognition_upload_notice">確認後將截取所有單字圖，並自動上傳識別。</string>
 </resources>

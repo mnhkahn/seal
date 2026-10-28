@@ -31,6 +31,8 @@ import coil.load
 import com.cyeam.seal.ocr.*
 import com.cyeam.seal.update.*
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.switchmaterial.SwitchMaterial
 import kotlinx.coroutines.Dispatchers
@@ -47,7 +49,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var body: LinearLayout
     private lateinit var content: LinearLayout
     private lateinit var sourceButtons: LinearLayout
-    private var sessionConsent=false
+    private lateinit var clipboardImages: ClipboardImagePrompt
+    private lateinit var handwritingButton: MaterialButton
+    private var handwritingOpen=false
+    private var handwritingDialog: androidx.appcompat.app.AlertDialog?=null
     private var manualUpdateCheck=false
     private var lastPromptedUpdate: String?=null
     private val imageLoader by lazy { ImageLoader.Builder(this).components { add(SvgDecoder.Factory()) }.build() }
@@ -60,7 +65,7 @@ class MainActivity : AppCompatActivity() {
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        sessionConsent=savedInstanceState?.getBoolean("upload_consent") ?: false
+        handwritingOpen=savedInstanceState?.getBoolean("handwriting_open") ?: false
         manualUpdateCheck=savedInstanceState?.getBoolean("manual_update_check") ?: false
         lastPromptedUpdate=savedInstanceState?.getString("prompted_update")
         model.cameraUri=(savedInstanceState?.getString("camera_uri")?.let(Uri::parse)) ?: model.cameraUri
@@ -91,14 +96,25 @@ class MainActivity : AppCompatActivity() {
         sourceButtons=row()
         sourceButtons.addView(button(R.string.choose_photo) { picker.launch(androidx.activity.result.PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },weight())
         sourceButtons.addView(button(R.string.take_photo,false) { takePhoto() },weight()); body.addView(sourceButtons)
+        handwritingButton=button(R.string.handwriting,false) { showHandwriting() }
+        body.addView(handwritingButton)
         content=column(0); body.addView(content)
+        clipboardImages=ClipboardImagePrompt(this,
+            canImport={ !handwritingOpen && !model.state.value.busy && model.state.value.glyphs.none { it.feedbackPending } },
+            hasImage={ model.state.value.image!=null },
+            onImport={ model.load(it) })
+        if(handwritingOpen) window.decorView.post { showHandwriting() }
         lifecycleScope.launch { repeatOnLifecycle(Lifecycle.State.STARTED) {
             launch { model.state.collect { render(it) } }
             launch { updates.state.collect { handleUpdate(it) } }
         } }
     }
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if(hasFocus && ::clipboardImages.isInitialized) window.decorView.post { clipboardImages.check() }
+    }
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putBoolean("upload_consent",sessionConsent)
+        outState.putBoolean("handwriting_open",handwritingOpen)
         outState.putBoolean("manual_update_check",manualUpdateCheck)
         outState.putString("prompted_update",lastPromptedUpdate)
         outState.putString("camera_uri",model.cameraUri?.toString())
@@ -113,8 +129,11 @@ class MainActivity : AppCompatActivity() {
         } catch(_: Exception) { toast(R.string.camera_error) }
     }
     private fun render(s: SealState) {
+        if(!s.busy && ::clipboardImages.isInitialized) window.decorView.post { clipboardImages.check() }
         content.removeAllViews()
-        for(i in 0 until sourceButtons.childCount) sourceButtons.getChildAt(i).isEnabled=!s.busy
+        val locked=s.busy || s.glyphs.any { it.feedbackPending }
+        for(i in 0 until sourceButtons.childCount) sourceButtons.getChildAt(i).isEnabled=!locked
+        handwritingButton.isEnabled=!locked
         if(s.image==null) {
             val welcome=card()
             welcome.addView(label(getString(R.string.welcome),23,true))
@@ -125,23 +144,11 @@ class MainActivity : AppCompatActivity() {
             if(s.message!=0) welcome.addView(label(getString(s.message),14))
             content.addView(welcome); return
         }
-        val source=card(); source.addView(label(getString(R.string.source),18,true))
-        source.addView(ImageView(this).apply {
-            setImageBitmap(s.image); scaleType=ImageView.ScaleType.FIT_CENTER
-            contentDescription=getString(R.string.source)
-        },LinearLayout.LayoutParams(-1,dp(220)))
-        val actions=row()
-        actions.addView(button(R.string.rotate,false) { model.rotate() }.apply { isEnabled=!s.busy },weight())
-        actions.addView(button(R.string.reset,false) { model.clear() }.apply { isEnabled=!s.busy },weight()); source.addView(actions)
-        val processing=row()
-        processing.addView(button(if(s.vertical) R.string.vertical else R.string.horizontal,false) { chooseDirection() }.apply { isEnabled=!s.busy },weight())
-        processing.addView(button(R.string.ink,false) { chooseInk() }.apply { isEnabled=!s.busy },weight()); source.addView(processing)
-        val segmentation=row()
-        segmentation.addView(button(R.string.auto_segment,false) { model.segment() }.apply { isEnabled=!s.busy },weight())
-        segmentation.addView(button(R.string.add_crop,false) { crop(null) }.apply { isEnabled=!s.busy },weight()); source.addView(segmentation)
-        source.addView(label(getString(R.string.single_guide),13)); content.addView(source)
-        val count=label(getString(R.string.crop_count,s.glyphs.size),20,true); content.addView(count)
-        if(s.glyphs.size>10) content.addView(label(getString(R.string.batch_limit),14).apply { setTextColor(Color.rgb(164,51,37)) })
+        if(s.editing && s.inputKind==InputKind.PHOTO) {
+            renderPhotoEditor(s)
+            return
+        }
+        if(s.inputKind==InputKind.PHOTO) content.addView(button(R.string.back_to_boxes,false) { model.editOriginal() }.apply { isEnabled=!locked })
         if(s.message!=0) content.addView(label(getString(s.message),14))
         if(s.busy) {
             content.addView(ProgressBar(this,null,android.R.attr.progressBarStyleHorizontal).apply {
@@ -151,26 +158,51 @@ class MainActivity : AppCompatActivity() {
             if(s.total>0) content.addView(label(getString(R.string.progress,s.completed,s.total),14))
             content.addView(button(R.string.cancel,false) { model.cancel() })
         } else if(s.total>0) content.addView(label(getString(R.string.completed,s.glyphs.count { it.candidates.isNotEmpty() },s.glyphs.count { it.error!=0 }),14))
-        content.addView(button(R.string.recognize) { startRecognition() }.apply { isEnabled=!s.busy && s.glyphs.none { it.feedbackPending } && s.glyphs.size in 1..10 })
-        val text=s.glyphs.filter { it.decision!=-1 }.mapNotNull { it.candidates.getOrNull(it.selected)?.text }.joinToString("")
-        if(text.isNotBlank()) {
-            val result=card(); result.addView(label(getString(R.string.result),18,true))
-            result.addView(label(text,30).apply { setTextIsSelectable(true) })
-            result.addView(button(R.string.copy_result,false) { copy(text) }); result.addView(label(getString(R.string.score_notice),12))
-            content.addView(result)
-        }
         s.glyphs.forEachIndexed { index,glyph -> renderGlyph(s.image,index,glyph,s.busy) }
+    }
+    private fun renderPhotoEditor(s: SealState) {
+        val image=s.image ?: return
+        val locked=s.busy || s.glyphs.any { it.feedbackPending }
+        val panel=card()
+        panel.addView(label(getString(R.string.crop_count,s.glyphs.size),18,true))
+        panel.addView(label(getString(R.string.box_editor_hint),13))
+        val editor=BoxEditorView(this,image,model.boxEditor,model.boxViewport,s.addingBox) { model.editorChanged() }.apply { isEnabled=!locked }
+        panel.addView(editor,LinearLayout.LayoutParams(-1,dp(280)))
+        val zoom=row()
+        zoom.addView(button(R.string.zoom_out,false) { editor.zoomBy(.8f) },weight())
+        zoom.addView(button(R.string.fit_image,false) { editor.fit() },weight())
+        zoom.addView(button(R.string.zoom_in,false) { editor.zoomBy(1.25f) },weight());panel.addView(zoom)
+        val chips=ChipGroup(this).apply { isSingleSelection=true }
+        s.glyphs.forEachIndexed { index,_ -> chips.addView(Chip(this).apply {
+            text="${index+1}"; isCheckable=true;isChecked=s.selectedBox==index;isEnabled=!locked
+            contentDescription=getString(R.string.glyph_number,index+1)
+            setOnClickListener { model.selectBox(index) }
+        }) };panel.addView(chips)
+        val selected=s.selectedBox?.let { s.glyphs.getOrNull(it)?.box }
+        val split=row()
+        split.addView(button(R.string.add_crop,false) { model.toggleAddBox() }.apply { isEnabled=!locked&&s.glyphs.size<80;isCheckable=true;isChecked=s.addingBox },weight())
+        split.addView(button(R.string.split_horizontal,false) { model.splitBox(true) }.apply { isEnabled=!locked&&selected!=null&&selected.width>=24&&s.glyphs.size<80 },weight())
+        split.addView(button(R.string.split_vertical,false) { model.splitBox(false) }.apply { isEnabled=!locked&&selected!=null&&selected.height>=24&&s.glyphs.size<80 },weight());panel.addView(split)
+        val edits=row()
+        edits.addView(button(R.string.delete_box,false) { model.deleteBox() }.apply { isEnabled=!locked&&selected!=null },weight())
+        edits.addView(button(R.string.undo_edit,false) { model.undoBoxes() }.apply { isEnabled=!locked&&s.canUndoBoxes },weight())
+        edits.addView(button(R.string.auto_segment,false) { model.segment() }.apply { isEnabled=!locked },weight());panel.addView(edits)
+        val processing=row()
+        processing.addView(button(if(s.vertical) R.string.vertical else R.string.horizontal,false) { chooseDirection() }.apply { isEnabled=!locked },weight())
+        processing.addView(button(R.string.ink,false) { chooseInk() }.apply { isEnabled=!locked },weight());panel.addView(processing)
+        if(s.busy) { panel.addView(ProgressBar(this));panel.addView(button(R.string.cancel,false) { model.cancel() }) }
+        if(s.message!=0) panel.addView(label(getString(s.message),14))
+        panel.addView(label(getString(R.string.recognition_upload_notice),12))
+        panel.addView(button(R.string.confirm_segments) { model.confirmAndRecognize() }.apply { isEnabled=!locked&&s.glyphs.isNotEmpty() })
+        content.addView(panel)
     }
     private fun renderGlyph(image: Bitmap,index: Int,g: Glyph,busy: Boolean) {
         val panel=card()
-        val top=row(); top.addView(label(getString(R.string.glyph_number,index+1),16,true),weight())
-        top.addView(button(R.string.edit,false) { crop(index) }.apply { isEnabled=!busy })
-        top.addView(button(R.string.delete,false) { model.delete(index) }.apply { isEnabled=!busy }); panel.addView(top)
+        panel.addView(label(getString(R.string.glyph_number,index+1),16,true))
         val b=g.box
         panel.addView(ImageView(this).apply {
-            setImageBitmap(Bitmap.createBitmap(image,b.x,b.y,b.width,b.height)); scaleType=ImageView.ScaleType.FIT_CENTER
+            setImageDrawable(GlyphCropDrawable(image,b)); scaleType=ImageView.ScaleType.FIT_CENTER
             contentDescription=getString(R.string.glyph_number,index+1)
-            setOnClickListener { if(!busy) crop(index) }
         },LinearLayout.LayoutParams(-1,dp(136)))
         val candidate=g.candidates.getOrNull(g.selected)
         if(candidate!=null) {
@@ -218,20 +250,45 @@ class MainActivity : AppCompatActivity() {
         val character=if(c.unicodeImage.isNotBlank()) "" else c.text
         return listOf(character+standard,match,score).filter { it.isNotBlank() }.joinToString(" · ")
     }
-    private fun crop(index: Int?) {
-        val s=model.state.value; val image=s.image ?: return
+    private fun startRecognition(index: Int?=null) { model.recognize(index) }
+    private fun showHandwriting() {
+        if(handwritingDialog?.isShowing==true || model.state.value.busy || model.state.value.glyphs.any { it.feedbackPending }) return
+        handwritingOpen=true
         val container=column(16)
-        container.addView(label(getString(R.string.crop_hint),14))
-        val view=CropView(this,image,index?.let { s.glyphs[it].box })
-        container.addView(view,LinearLayout.LayoutParams(-1,dp(350)))
-        MaterialAlertDialogBuilder(this).setTitle(if(index==null) R.string.add_crop else R.string.edit)
-            .setView(container).setNegativeButton(R.string.cancel,null).setPositiveButton(R.string.save) { _,_ -> model.setBox(index,view.box()) }.show()
+        container.addView(label(getString(R.string.handwriting_single),15,true))
+        val view=HandwritingView(this,model.handwriting)
+        val side=minOf(dp(300),resources.displayMetrics.widthPixels-dp(96)).coerceAtLeast(dp(160))
+        container.addView(view,LinearLayout.LayoutParams(side,side).apply { gravity=Gravity.CENTER_HORIZONTAL })
+        val count=label(getString(R.string.stroke_count,model.handwriting.count),13)
+        container.addView(count)
+        val actions=row()
+        val undo=button(R.string.undo_stroke,false) { view.undo() }
+        val clear=button(R.string.clear_drawing,false) { view.clear() }
+        actions.addView(undo,weight());actions.addView(clear,weight());container.addView(actions)
+        val dialog=MaterialAlertDialogBuilder(this).setTitle(R.string.handwriting)
+            .setView(ScrollView(this).apply { addView(container) }).setNegativeButton(R.string.cancel,null)
+            .setPositiveButton(R.string.handwriting_submit,null).create()
+        handwritingDialog=dialog
+        fun update() {
+            val hasStrokes=model.handwriting.count>0
+            count.text=getString(R.string.stroke_count,model.handwriting.count)
+            undo.isEnabled=hasStrokes;clear.isEnabled=hasStrokes
+            dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)?.isEnabled=hasStrokes
+        }
+        view.onChanged={ update() }
+        dialog.setOnShowListener {
+            update()
+            dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                if(model.handwriting.count==0) return@setOnClickListener
+                val bitmap=view.exportSingleCharacter()
+                dialog.dismiss()
+                model.recognizeHandwriting(bitmap)
+            }
+        }
+        dialog.setOnDismissListener { handwritingOpen=false;handwritingDialog=null }
+        dialog.show()
     }
-    private fun startRecognition(index: Int?=null) {
-        if(sessionConsent) { model.recognize(index); return }
-        MaterialAlertDialogBuilder(this).setTitle(R.string.upload_title).setMessage(R.string.upload_notice)
-            .setNegativeButton(R.string.cancel,null).setPositiveButton(R.string.continue_action) { _,_ -> sessionConsent=true; model.recognize(index) }.show()
-    }
+    override fun onDestroy() { handwritingDialog?.dismiss();super.onDestroy() }
     private fun chooseDirection() {
         val s=model.state.value
         MaterialAlertDialogBuilder(this).setTitle(R.string.reading_order).setSingleChoiceItems(arrayOf(getString(R.string.vertical),getString(R.string.horizontal)),if(s.vertical) 0 else 1) { d,n -> d.dismiss(); model.segment(vertical=n==0) }.show()

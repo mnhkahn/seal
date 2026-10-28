@@ -86,4 +86,25 @@
     <string name="feedback_saving">Guardando comentarios…</string>
     <string name="feedback_error">No se pudieron guardar. Vuelve a elegir para reintentar.</string>
     <string name="feedback_expired">Reconoce esta imagen de nuevo antes de enviar comentarios.</string>
+    <string name="clipboard_image_title">Imagen en el portapapeles</string>
+    <string name="clipboard_image_message">¿Usar esta imagen para separar los caracteres?</string>
+    <string name="clipboard_replace_image">Se reemplazará la imagen actual.</string>
+    <string name="clipboard_use_image">Usar imagen</string>
+    <string name="handwriting">Escribir un carácter</string>
+    <string name="handwriting_single">Escribe un solo carácter completo de escritura de sello. Se enviará el dibujo completo, sin separar caracteres.</string>
+    <string name="handwriting_submit">Enviar y reconocer</string>
+    <string name="undo_stroke">Deshacer último trazo</string>
+    <string name="clear_drawing">Borrar</string>
+    <string name="stroke_count">Trazos: %1$d</string>
+    <string name="box_editor_hint">Selecciona un marco. Arrastra dentro para moverlo o sus bordes para ajustar el tamaño.</string>
+    <string name="split_horizontal">Dividir izquierda / derecha</string>
+    <string name="split_vertical">Dividir arriba / abajo</string>
+    <string name="delete_box">Eliminar marco</string>
+    <string name="undo_edit">Deshacer</string>
+    <string name="confirm_segments">Confirmar recortes y reconocer</string>
+    <string name="back_to_boxes">Ajustar marcos en original</string>
+    <string name="fit_image">Imagen completa</string>
+    <string name="zoom_in">Ampliar</string>
+    <string name="zoom_out">Reducir</string>
+    <string name="recognition_upload_notice">Confirma para recortar los caracteres e iniciar el reconocimiento en la nube.</string>
 </resources>

@@ -86,4 +86,25 @@
     <string name="feedback_saving">Сохранение отзыва…</string>
     <string name="feedback_error">Не удалось сохранить. Выберите ещё раз, чтобы повторить.</string>
     <string name="feedback_expired">Распознайте изображение заново перед отправкой отзыва.</string>
+    <string name="clipboard_image_title">Изображение в буфере обмена</string>
+    <string name="clipboard_image_message">Использовать изображение для разделения знаков?</string>
+    <string name="clipboard_replace_image">Текущее изображение будет заменено.</string>
+    <string name="clipboard_use_image">Использовать изображение</string>
+    <string name="handwriting">Написать один знак</string>
+    <string name="handwriting_single">Напишите один полный знак чжуаньшу. Рисунок отправляется целиком, без разделения на знаки.</string>
+    <string name="handwriting_submit">Отправить знак и распознать</string>
+    <string name="undo_stroke">Отменить последний штрих</string>
+    <string name="clear_drawing">Очистить</string>
+    <string name="stroke_count">Штрихов: %1$d</string>
+    <string name="box_editor_hint">Выберите рамку. Перетаскивайте внутри для перемещения, за края — для изменения размера.</string>
+    <string name="split_horizontal">Разделить слева / справа</string>
+    <string name="split_vertical">Разделить сверху / снизу</string>
+    <string name="delete_box">Удалить рамку</string>
+    <string name="undo_edit">Отменить</string>
+    <string name="confirm_segments">Подтвердить рамки и распознать</string>
+    <string name="back_to_boxes">Изменить рамки на оригинале</string>
+    <string name="fit_image">Всё изображение</string>
+    <string name="zoom_in">Увеличить</string>
+    <string name="zoom_out">Уменьшить</string>
+    <string name="recognition_upload_notice">После подтверждения знаки обрезаются и автоматически отправляются на распознавание.</string>
 </resources>

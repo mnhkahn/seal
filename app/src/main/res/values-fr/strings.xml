@@ -86,4 +86,25 @@
     <string name="feedback_saving">Enregistrement du retour…</string>
     <string name="feedback_error">Échec de l’enregistrement. Sélectionnez à nouveau pour réessayer.</string>
     <string name="feedback_expired">Relancez la reconnaissance de cette image avant de donner votre avis.</string>
+    <string name="clipboard_image_title">Image trouvée dans le presse-papiers</string>
+    <string name="clipboard_image_message">Utiliser cette image pour séparer les caractères ?</string>
+    <string name="clipboard_replace_image">L’image actuelle sera remplacée.</string>
+    <string name="clipboard_use_image">Utiliser l’image</string>
+    <string name="handwriting">Écrire un caractère</string>
+    <string name="handwriting_single">Écrivez un seul caractère sigillaire entier. Le dessin complet sera envoyé pour reconnaissance, sans découpage.</string>
+    <string name="handwriting_submit">Envoyer et reconnaître</string>
+    <string name="undo_stroke">Annuler le dernier trait</string>
+    <string name="clear_drawing">Effacer</string>
+    <string name="stroke_count">Traits : %1$d</string>
+    <string name="box_editor_hint">Sélectionnez un cadre, glissez dedans pour le déplacer, ou sur ses bords pour le redimensionner.</string>
+    <string name="split_horizontal">Diviser gauche / droite</string>
+    <string name="split_vertical">Diviser haut / bas</string>
+    <string name="delete_box">Supprimer le cadre</string>
+    <string name="undo_edit">Annuler</string>
+    <string name="confirm_segments">Confirmer et reconnaître</string>
+    <string name="back_to_boxes">Ajuster sur l’original</string>
+    <string name="fit_image">Image entière</string>
+    <string name="zoom_in">Agrandir</string>
+    <string name="zoom_out">Réduire</string>
+    <string name="recognition_upload_notice">Confirmez pour découper les caractères et lancer la reconnaissance cloud.</string>
 </resources>

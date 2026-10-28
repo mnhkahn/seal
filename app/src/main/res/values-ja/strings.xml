@@ -86,4 +86,25 @@
     <string name="feedback_saving">フィードバックを保存中…</string>
     <string name="feedback_error">保存できませんでした。もう一度選択して再試行してください。</string>
     <string name="feedback_expired">画像を再認識してからフィードバックを送信してください。</string>
+    <string name="clipboard_image_title">クリップボードに画像があります</string>
+    <string name="clipboard_image_message">この画像を文字分割に使いますか？</string>
+    <string name="clipboard_replace_image">現在の画像が置き換わります。</string>
+    <string name="clipboard_use_image">画像を使う</string>
+    <string name="handwriting">一文字を手書き</string>
+    <string name="handwriting_single">完全な篆書を一文字だけ書いてください。画像全体をクラウドで認識し、文字分割は行いません。</string>
+    <string name="handwriting_submit">一文字を送信して認識</string>
+    <string name="undo_stroke">最後の一画を取り消す</string>
+    <string name="clear_drawing">消去</string>
+    <string name="stroke_count">筆画数：%1$d</string>
+    <string name="box_editor_hint">枠を選び、内側をドラッグして移動、辺や角でサイズを調整します。</string>
+    <string name="split_horizontal">左右に分割</string>
+    <string name="split_vertical">上下に分割</string>
+    <string name="delete_box">枠を削除</string>
+    <string name="undo_edit">元に戻す</string>
+    <string name="confirm_segments">分割を確定して認識</string>
+    <string name="back_to_boxes">元の画像で枠を調整</string>
+    <string name="fit_image">全体表示</string>
+    <string name="zoom_in">拡大</string>
+    <string name="zoom_out">縮小</string>
+    <string name="recognition_upload_notice">確定後、各文字を切り抜き、自動でクラウド認識を開始します。</string>
 </resources>

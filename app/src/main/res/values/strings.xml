@@ -86,4 +86,25 @@
     <string name="feedback_saving">Saving feedback…</string>
     <string name="feedback_error">Could not save feedback. Tap your choice to retry.</string>
     <string name="feedback_expired">Please recognize this image again before sending feedback.</string>
+    <string name="clipboard_image_title">Image found on clipboard</string>
+    <string name="clipboard_image_message">Use this image for character segmentation?</string>
+    <string name="clipboard_replace_image">This will replace the current image.</string>
+    <string name="clipboard_use_image">Use image</string>
+    <string name="handwriting">Write one character</string>
+    <string name="handwriting_single">Write one complete seal-script character only. Submit the whole drawing for cloud recognition; it will not be segmented.</string>
+    <string name="handwriting_submit">Submit one character and recognize</string>
+    <string name="undo_stroke">Undo last stroke</string>
+    <string name="clear_drawing">Clear drawing</string>
+    <string name="stroke_count">Strokes: %1$d</string>
+    <string name="box_editor_hint">Select a box. Drag inside to move it, or drag its corners and edges to resize.</string>
+    <string name="split_horizontal">Split left / right</string>
+    <string name="split_vertical">Split top / bottom</string>
+    <string name="delete_box">Delete box</string>
+    <string name="undo_edit">Undo</string>
+    <string name="confirm_segments">Confirm crops and recognize</string>
+    <string name="back_to_boxes">Adjust boxes on original</string>
+    <string name="fit_image">Fit image</string>
+    <string name="zoom_in">Zoom in</string>
+    <string name="zoom_out">Zoom out</string>
+    <string name="recognition_upload_notice">Confirm to crop the characters and start cloud recognition automatically.</string>
 </resources>

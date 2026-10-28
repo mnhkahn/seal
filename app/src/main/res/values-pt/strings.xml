@@ -86,4 +86,25 @@
     <string name="feedback_saving">Salvando feedback…</string>
     <string name="feedback_error">Não foi possível salvar. Selecione novamente para tentar outra vez.</string>
     <string name="feedback_expired">Reconheça esta imagem novamente antes de enviar feedback.</string>
+    <string name="clipboard_image_title">Imagem na área de transferência</string>
+    <string name="clipboard_image_message">Usar esta imagem para separar os caracteres?</string>
+    <string name="clipboard_replace_image">A imagem atual será substituída.</string>
+    <string name="clipboard_use_image">Usar imagem</string>
+    <string name="handwriting">Escrever um caractere</string>
+    <string name="handwriting_single">Escreva apenas um caractere completo de escrita de selo. O desenho inteiro será enviado, sem separação.</string>
+    <string name="handwriting_submit">Enviar e reconhecer</string>
+    <string name="undo_stroke">Desfazer último traço</string>
+    <string name="clear_drawing">Limpar</string>
+    <string name="stroke_count">Traços: %1$d</string>
+    <string name="box_editor_hint">Selecione um quadro. Arraste dentro para mover ou nas bordas para redimensionar.</string>
+    <string name="split_horizontal">Dividir esquerda / direita</string>
+    <string name="split_vertical">Dividir acima / abaixo</string>
+    <string name="delete_box">Excluir quadro</string>
+    <string name="undo_edit">Desfazer</string>
+    <string name="confirm_segments">Confirmar recortes e reconhecer</string>
+    <string name="back_to_boxes">Ajustar quadros no original</string>
+    <string name="fit_image">Imagem completa</string>
+    <string name="zoom_in">Ampliar</string>
+    <string name="zoom_out">Reduzir</string>
+    <string name="recognition_upload_notice">Confirme para recortar os caracteres e iniciar o reconhecimento na nuvem.</string>
 </resources>

@@ -86,4 +86,25 @@
     <string name="feedback_saving">Rückmeldung wird gespeichert…</string>
     <string name="feedback_error">Speichern fehlgeschlagen. Bitte erneut auswählen.</string>
     <string name="feedback_expired">Bitte das Bild erneut erkennen lassen und dann Rückmeldung senden.</string>
+    <string name="clipboard_image_title">Bild in der Zwischenablage</string>
+    <string name="clipboard_image_message">Dieses Bild zur Zeichenaufteilung verwenden?</string>
+    <string name="clipboard_replace_image">Das aktuelle Bild wird ersetzt.</string>
+    <string name="clipboard_use_image">Bild verwenden</string>
+    <string name="handwriting">Ein Zeichen schreiben</string>
+    <string name="handwriting_single">Nur ein vollständiges Siegelschriftzeichen schreiben. Die ganze Zeichnung wird zur Erkennung gesendet, ohne Aufteilung.</string>
+    <string name="handwriting_submit">Zeichen senden und erkennen</string>
+    <string name="undo_stroke">Letzten Strich zurücknehmen</string>
+    <string name="clear_drawing">Leeren</string>
+    <string name="stroke_count">Striche: %1$d</string>
+    <string name="box_editor_hint">Rahmen auswählen. Innen ziehen zum Verschieben, an Kanten oder Ecken zum Skalieren.</string>
+    <string name="split_horizontal">Links / rechts teilen</string>
+    <string name="split_vertical">Oben / unten teilen</string>
+    <string name="delete_box">Rahmen löschen</string>
+    <string name="undo_edit">Rückgängig</string>
+    <string name="confirm_segments">Ausschnitte bestätigen und erkennen</string>
+    <string name="back_to_boxes">Rahmen im Original anpassen</string>
+    <string name="fit_image">Ganzes Bild</string>
+    <string name="zoom_in">Vergrößern</string>
+    <string name="zoom_out">Verkleinern</string>
+    <string name="recognition_upload_notice">Bestätigen, um Zeichen auszuschneiden und die Cloud-Erkennung zu starten.</string>
 </resources>

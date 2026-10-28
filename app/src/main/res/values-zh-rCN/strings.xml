@@ -86,4 +86,25 @@
     <string name="feedback_saving">正在保存反馈…</string>
     <string name="feedback_error">反馈保存失败，请再次点击选择重试。</string>
     <string name="feedback_expired">请重新识别此图片后再反馈。</string>
+    <string name="clipboard_image_title">发现剪贴板图片</string>
+    <string name="clipboard_image_message">是否使用这张图片进行分字？</string>
+    <string name="clipboard_replace_image">使用后将替换当前图片。</string>
+    <string name="clipboard_use_image">使用图片</string>
+    <string name="handwriting">手写单字</string>
+    <string name="handwriting_single">每次只写一个完整篆字。提交后上传整张字图识别，不自动分字。</string>
+    <string name="handwriting_submit">提交单字并识别</string>
+    <string name="undo_stroke">撤销上一笔</string>
+    <string name="clear_drawing">清空</string>
+    <string name="stroke_count">已写 %1$d 笔</string>
+    <string name="box_editor_hint">点击字框选中，拖动框内移动，拖动边角调整大小。</string>
+    <string name="split_horizontal">左右拆分</string>
+    <string name="split_vertical">上下拆分</string>
+    <string name="delete_box">删除字框</string>
+    <string name="undo_edit">撤销</string>
+    <string name="confirm_segments">确认分字并识别</string>
+    <string name="back_to_boxes">返回调整字框</string>
+    <string name="fit_image">全图</string>
+    <string name="zoom_in">放大</string>
+    <string name="zoom_out">缩小</string>
+    <string name="recognition_upload_notice">确认后将截取所有单字图，并自动上传识别。</string>
 </resources>
