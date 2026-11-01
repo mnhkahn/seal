@@ -66,14 +66,14 @@
     <string name="rate_limit">请求较多，请稍等后重试。</string>
     <string name="upload_title">上传字图识别？</string>
     <string name="upload_notice">所选字图将上传至 cyeam.com 云端识别。服务可能保留字图、结果和 IP 用于识别调试，请避免上传含隐私信息的图片。</string>
-    <string name="history_empty">最近识别过的候选字将显示在这里。</string>
+    <string name="history_empty">识别过的图片和候选字将显示在这里。</string>
     <string name="clear_history">清空记录</string>
     <string name="language">语言</string>
     <string name="system_language">跟随系统</string>
     <string name="analytics">使用统计</string>
     <string name="analytics_notice">Google Analytics 记录使用事件与数量，统计事件不包含图片或识别文字，可在此关闭采集。</string>
     <string name="privacy">隐私说明</string>
-    <string name="privacy_details">裁剪在本机完成。提交的字图发送至 cyeam.com 及其 OCR 服务，服务可能保存字图、结果和 IP 用于调试。最近 50 条候选记录保存在本机，可在历史记录中清空。启用统计时 Firebase Analytics 收集应用使用情况，可在设置中关闭。无需注册账户。</string>
+    <string name="privacy_details">裁剪在本机完成。提交的字图发送至 cyeam.com 及其 OCR 服务，服务可能保存字图、结果和 IP 用于调试。识别图片及候选字保存在本机，最多 50 条、图片合计不超过 32 MB，可在历史记录中删除或清空。启用统计时 Firebase Analytics 收集应用使用情况，可在设置中关闭。无需注册账户。</string>
     <string name="app_update">应用更新</string>
     <string name="check_update">检查更新</string>
     <string name="checking_update">正在检查更新…</string>
@@ -110,4 +110,7 @@
     <string name="zoom_in">放大</string>
     <string name="zoom_out">缩小</string>
     <string name="recognition_upload_notice">确认后将截取所有单字图，并自动上传识别。</string>
+    <string name="history_restore">回填图片并调整</string>
+    <string name="history_error">历史记录读取或更新失败，请重试。</string>
+    <string name="history_save_error">识别已完成，但图片未能保存到历史记录。</string>
 </resources>

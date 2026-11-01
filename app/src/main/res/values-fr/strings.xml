@@ -66,14 +66,14 @@
     <string name="rate_limit">Trop de requêtes. Patientez avant de réessayer.</string>
     <string name="upload_title">Envoyer les découpes ?</string>
     <string name="upload_notice">Les découpes seront envoyées à cyeam.com. Le service peut conserver images, résultats et IP pour le débogage OCR. Évitez les données privées.</string>
-    <string name="history_empty">Vos candidats récents apparaîtront ici.</string>
+    <string name="history_empty">Les images et candidats reconnus apparaîtront ici.</string>
     <string name="clear_history">Effacer l’historique</string>
     <string name="language">Langue</string>
     <string name="system_language">Langue du système</string>
     <string name="analytics">Statistiques d’utilisation</string>
     <string name="analytics_notice">Google Analytics enregistre les événements et quantités, sans images ni texte reconnu. Vous pouvez le désactiver ici.</string>
     <string name="privacy">Confidentialité</string>
-    <string name="privacy_details">Le découpage est local. Les découpes sont traitées par cyeam.com et son fournisseur OCR, qui peuvent conserver images, résultats et IP pour le débogage. Les 50 dernières listes de candidats sont stockées sur cet appareil et effaçables dans Historique. Firebase Analytics collecte l’usage si activé ; désactivez-le dans Réglages. Aucun compte requis.</string>
+    <string name="privacy_details">Le découpage est local. Les découpes sont traitées par cyeam.com et son fournisseur OCR, qui peuvent conserver images, résultats et IP pour le débogage. Jusqu’à 50 images reconnues et leurs candidats sont conservés sur cet appareil, avec une limite de 32 Mo d’images, et peuvent être supprimés dans Historique. Firebase Analytics collecte l’usage si activé ; désactivez-le dans Réglages. Aucun compte requis.</string>
     <string name="app_update">Mise à jour</string>
     <string name="check_update">Vérifier les mises à jour</string>
     <string name="checking_update">Recherche de mise à jour…</string>
@@ -110,4 +110,7 @@
     <string name="zoom_in">Agrandir</string>
     <string name="zoom_out">Réduire</string>
     <string name="recognition_upload_notice">Confirmez pour découper les caractères et lancer la reconnaissance cloud.</string>
+    <string name="history_restore">Restaurer et ajuster l’image</string>
+    <string name="history_error">Lecture ou mise à jour de l’historique impossible. Réessayez.</string>
+    <string name="history_save_error">Reconnaissance terminée, mais l’image n’a pas pu être enregistrée dans l’historique.</string>
 </resources>

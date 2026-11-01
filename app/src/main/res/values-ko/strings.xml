@@ -66,14 +66,14 @@
     <string name="rate_limit">요청이 많습니다. 잠시 후 다시 시도하세요.</string>
     <string name="upload_title">글자 이미지를 업로드할까요?</string>
     <string name="upload_notice">선택한 글자 이미지를 cyeam.com에 전송합니다. 서비스는 OCR 디버깅을 위해 이미지·결과·IP를 보관할 수 있습니다. 개인정보가 있는 사진은 피하세요.</string>
-    <string name="history_empty">최근 인식 후보가 여기에 표시됩니다.</string>
+    <string name="history_empty">인식한 이미지와 후보가 여기에 표시됩니다.</string>
     <string name="clear_history">기록 삭제</string>
     <string name="language">언어</string>
     <string name="system_language">시스템 설정 따르기</string>
     <string name="analytics">사용 통계</string>
     <string name="analytics_notice">Google Analytics는 사용 이벤트와 수량을 기록합니다. 이미지와 인식 문자는 통계에 포함하지 않습니다. 여기서 끌 수 있습니다.</string>
     <string name="privacy">개인정보 안내</string>
-    <string name="privacy_details">자르기는 기기에서 처리됩니다. 전송된 이미지는 cyeam.com과 OCR 제공업체에서 처리하며 디버깅을 위해 이미지·결과·IP가 보관될 수 있습니다. 최근 후보 50건은 기기에 저장되며 기록에서 삭제할 수 있습니다. Firebase Analytics 사용 통계는 설정에서 끌 수 있습니다. 계정은 필요 없습니다.</string>
+    <string name="privacy_details">자르기는 기기에서 처리됩니다. 전송된 이미지는 cyeam.com과 OCR 제공업체에서 처리하며 디버깅을 위해 이미지·결과·IP가 보관될 수 있습니다. 인식 이미지와 후보는 최대 50건, 이미지 총 32 MB까지 기기에 저장되며 기록에서 삭제할 수 있습니다. Firebase Analytics 사용 통계는 설정에서 끌 수 있습니다. 계정은 필요 없습니다.</string>
     <string name="app_update">앱 업데이트</string>
     <string name="check_update">업데이트 확인</string>
     <string name="checking_update">업데이트 확인 중…</string>
@@ -110,4 +110,7 @@
     <string name="zoom_in">확대</string>
     <string name="zoom_out">축소</string>
     <string name="recognition_upload_notice">확정하면 각 글자를 잘라 자동으로 클라우드 인식을 시작합니다.</string>
+    <string name="history_restore">이미지 복원 및 조정</string>
+    <string name="history_error">기록을 읽거나 수정할 수 없습니다. 다시 시도하세요.</string>
+    <string name="history_save_error">인식은 완료되었지만 이미지를 기록에 저장하지 못했습니다.</string>
 </resources>

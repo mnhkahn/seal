@@ -38,7 +38,6 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONArray
 import java.io.File
 import java.text.DateFormat
 import java.util.Date
@@ -162,6 +161,7 @@ class MainActivity : AppCompatActivity() {
         val panel=card()
         panel.addView(label(getString(R.string.crop_count,s.glyphs.size),18,true))
         panel.addView(label(getString(R.string.box_editor_hint),13))
+        if(s.message!=0) panel.addView(label(getString(s.message),14))
         val editor=BoxEditorView(this,image,model.boxEditor,model.boxViewport,s.addingBox) { model.editorChanged() }.apply { isEnabled=!locked }
         panel.addView(editor,LinearLayout.LayoutParams(-1,dp(280)))
         val zoom=row()
@@ -294,18 +294,54 @@ class MainActivity : AppCompatActivity() {
         MaterialAlertDialogBuilder(this).setTitle(R.string.ink).setSingleChoiceItems(arrayOf(getString(R.string.ink_auto),getString(R.string.ink_dark),getString(R.string.ink_light),getString(R.string.ink_red)),model.state.value.ink.ordinal) { d,n -> d.dismiss(); model.segment(ink=Ink.entries[n]) }.show()
     }
     private fun history() {
-        lifecycleScope.launch {
-            val entries=withContext(Dispatchers.IO) { runCatching { if(model.historyFile.exists()) JSONArray(model.historyFile.readText()) else JSONArray() }.getOrDefault(JSONArray()) }
-            val list=column(16)
-            if(entries.length()==0) list.addView(label(getString(R.string.history_empty),16))
-            for(i in 0 until entries.length()) {
-                val item=entries.getJSONObject(i); val text=item.getString("text")
-                list.addView(label(DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT).format(Date(item.getLong("time"))),12))
-                list.addView(label(text,22).apply { setTextIsSelectable(true); setOnClickListener { copy(text) } })
+        val list=column(16)
+        val dialog=MaterialAlertDialogBuilder(this).setTitle(R.string.history)
+            .setView(ScrollView(this).apply { addView(list) }).setNegativeButton(R.string.close,null)
+            .setNeutralButton(R.string.clear_history,null).create()
+        fun refresh() {
+            lifecycleScope.launch {
+                val result=withContext(Dispatchers.IO) { runCatching { model.history.list() } }
+                if(!dialog.isShowing) return@launch
+                list.removeAllViews()
+                val entries=result.getOrNull()
+                if(entries==null) { list.addView(label(getString(R.string.history_error),16)); return@launch }
+                if(entries.isEmpty()) list.addView(label(getString(R.string.history_empty),16))
+                for(item in entries) {
+                    val panel=card()
+                    panel.addView(label(DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT).format(Date(item.time)),12))
+                    if(item.image!=null) {
+                        panel.addView(ImageView(this@MainActivity).apply {
+                            scaleType=ImageView.ScaleType.FIT_CENTER
+                            contentDescription=getString(R.string.history_restore)
+                            load(item.image,imageLoader) { size(dp(160),dp(160)) }
+                            setOnClickListener { if(model.restoreHistory(item)) dialog.dismiss() }
+                        },LinearLayout.LayoutParams(-1,dp(144)))
+                        panel.addView(button(R.string.history_restore,false) {
+                            if(model.restoreHistory(item)) dialog.dismiss()
+                        })
+                    }
+                    val summary=if(item.candidates.isEmpty()) item.text else item.candidates.take(5).joinToString("\n",transform=::candidateLabel)
+                    panel.addView(label(summary,17).apply { setTextIsSelectable(true) })
+                    panel.addView(button(R.string.delete,false) {
+                        lifecycleScope.launch {
+                            val deleted=withContext(Dispatchers.IO) { runCatching { model.history.delete(item.id) }.isSuccess }
+                            if(deleted) refresh() else Toast.makeText(this@MainActivity,R.string.history_error,Toast.LENGTH_SHORT).show()
+                        }
+                    })
+                    list.addView(panel)
+                }
             }
-            MaterialAlertDialogBuilder(this@MainActivity).setTitle(R.string.history).setView(ScrollView(this@MainActivity).apply { addView(list) })
-                .setNegativeButton(R.string.close,null).setNeutralButton(R.string.clear_history) { _,_ -> lifecycleScope.launch(Dispatchers.IO) { model.historyFile.delete() } }.show()
         }
+        dialog.setOnShowListener {
+            dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEUTRAL).setOnClickListener {
+                lifecycleScope.launch {
+                    val cleared=withContext(Dispatchers.IO) { runCatching { model.history.clear() }.isSuccess }
+                    if(cleared) refresh() else Toast.makeText(this@MainActivity,R.string.history_error,Toast.LENGTH_SHORT).show()
+                }
+            }
+            refresh()
+        }
+        dialog.show()
     }
     private fun settings() {
         val list=column(20)

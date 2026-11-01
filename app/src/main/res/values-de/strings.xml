@@ -66,14 +66,14 @@
     <string name="rate_limit">Zu viele Anfragen. Bitte später erneut versuchen.</string>
     <string name="upload_title">Zeichenausschnitte hochladen?</string>
     <string name="upload_notice">Ausschnitte werden an cyeam.com gesendet. Der Dienst kann Bilder, Ergebnisse und IP zur OCR-Fehlersuche speichern. Private Informationen vermeiden.</string>
-    <string name="history_empty">Letzte Erkennungskandidaten erscheinen hier.</string>
+    <string name="history_empty">Erkannte Bilder und Kandidaten erscheinen hier.</string>
     <string name="clear_history">Verlauf löschen</string>
     <string name="language">Sprache</string>
     <string name="system_language">Systemsprache</string>
     <string name="analytics">Nutzungsstatistik</string>
     <string name="analytics_notice">Google Analytics erfasst Nutzung und Anzahlen, ohne Bilder oder erkannten Text. Hier deaktivierbar.</string>
     <string name="privacy">Datenschutz</string>
-    <string name="privacy_details">Der Zuschnitt erfolgt lokal. Ausschnitte werden von cyeam.com und dessen OCR-Anbieter verarbeitet; Bilder, Ergebnisse und IP können zur Fehlersuche gespeichert werden. Die letzten 50 Kandidatenlisten bleiben lokal und lassen sich im Verlauf löschen. Firebase Analytics erfasst bei Aktivierung die Nutzung und lässt sich in Einstellungen ausschalten. Kein Konto nötig.</string>
+    <string name="privacy_details">Der Zuschnitt erfolgt lokal. Ausschnitte werden von cyeam.com und dessen OCR-Anbieter verarbeitet; Bilder, Ergebnisse und IP können zur Fehlersuche gespeichert werden. Bis zu 50 erkannte Bilder mit Kandidaten bleiben lokal, begrenzt auf 32 MB Bilddaten, und lassen sich im Verlauf löschen. Firebase Analytics erfasst bei Aktivierung die Nutzung und lässt sich in Einstellungen ausschalten. Kein Konto nötig.</string>
     <string name="app_update">App-Update</string>
     <string name="check_update">Nach Updates suchen</string>
     <string name="checking_update">Updates werden gesucht…</string>
@@ -110,4 +110,7 @@
     <string name="zoom_in">Vergrößern</string>
     <string name="zoom_out">Verkleinern</string>
     <string name="recognition_upload_notice">Bestätigen, um Zeichen auszuschneiden und die Cloud-Erkennung zu starten.</string>
+    <string name="history_restore">Bild laden und anpassen</string>
+    <string name="history_error">Verlauf konnte nicht gelesen oder geändert werden. Erneut versuchen.</string>
+    <string name="history_save_error">Erkennung abgeschlossen, aber das Bild konnte nicht im Verlauf gespeichert werden.</string>
 </resources>

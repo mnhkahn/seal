@@ -66,14 +66,14 @@
     <string name="rate_limit">Слишком много запросов. Повторите позже.</string>
     <string name="upload_title">Отправить фрагменты знаков?</string>
     <string name="upload_notice">Фрагменты будут отправлены на cyeam.com. Сервис может сохранять изображения, результаты и IP для отладки OCR. Не отправляйте личные данные.</string>
-    <string name="history_empty">Здесь появятся недавние варианты распознавания.</string>
+    <string name="history_empty">Здесь появятся распознанные изображения и варианты.</string>
     <string name="clear_history">Очистить историю</string>
     <string name="language">Язык</string>
     <string name="system_language">Язык системы</string>
     <string name="analytics">Статистика использования</string>
     <string name="analytics_notice">Google Analytics записывает события и количество, без изображений и распознанного текста. Сбор можно отключить здесь.</string>
     <string name="privacy">Конфиденциальность</string>
-    <string name="privacy_details">Обрезка выполняется локально. Фрагменты обрабатывают cyeam.com и поставщик OCR; изображения, результаты и IP могут сохраняться для отладки. Последние 50 списков вариантов хранятся на устройстве и удаляются из истории. Сбор статистики Firebase Analytics отключается в настройках. Учётная запись не нужна.</string>
+    <string name="privacy_details">Обрезка выполняется локально. Фрагменты обрабатывают cyeam.com и поставщик OCR; изображения, результаты и IP могут сохраняться для отладки. На устройстве хранятся до 50 распознанных изображений с вариантами, не более 32 МБ изображений; их можно удалить из истории. Сбор статистики Firebase Analytics отключается в настройках. Учётная запись не нужна.</string>
     <string name="app_update">Обновление</string>
     <string name="check_update">Проверить обновления</string>
     <string name="checking_update">Проверка обновлений…</string>
@@ -110,4 +110,7 @@
     <string name="zoom_in">Увеличить</string>
     <string name="zoom_out">Уменьшить</string>
     <string name="recognition_upload_notice">После подтверждения знаки обрезаются и автоматически отправляются на распознавание.</string>
+    <string name="history_restore">Восстановить и изменить изображение</string>
+    <string name="history_error">Не удалось прочитать или обновить историю. Повторите попытку.</string>
+    <string name="history_save_error">Распознавание завершено, но изображение не удалось сохранить в истории.</string>
 </resources>

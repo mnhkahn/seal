@@ -66,14 +66,14 @@
     <string name="rate_limit">Too many requests. Please wait before retrying.</string>
     <string name="upload_title">Upload character crops?</string>
     <string name="upload_notice">Selected crops will be sent to cyeam.com for cloud recognition. The service may retain submitted crops, results and your IP for OCR debugging. Avoid images containing private information.</string>
-    <string name="history_empty">Your recent recognition candidates will appear here.</string>
+    <string name="history_empty">Recognized images and candidates will appear here.</string>
     <string name="clear_history">Clear history</string>
     <string name="language">Language</string>
     <string name="system_language">Follow system</string>
     <string name="analytics">Usage analytics</string>
     <string name="analytics_notice">Google Analytics records usage events and counts. Images and recognized text are never included in analytics events. You can disable collection here.</string>
     <string name="privacy">Privacy</string>
-    <string name="privacy_details">Cropping is performed locally. Submitted character crops are sent to cyeam.com and its OCR provider; the service may retain crops, results and IP for debugging. The last 50 candidate lists are stored on this device and can be cleared from History. Firebase Analytics collects app usage when enabled; switch it off in Settings. No account is required.</string>
+    <string name="privacy_details">Cropping is performed locally. Submitted character crops are sent to cyeam.com and its OCR provider; the service may retain crops, results and IP for debugging. Up to 50 recognized images and their candidates are stored on this device, within a 32 MB image limit, and can be deleted from History. Firebase Analytics collects app usage when enabled; switch it off in Settings. No account is required.</string>
     <string name="app_update">App update</string>
     <string name="check_update">Check for updates</string>
     <string name="checking_update">Checking for updates…</string>
@@ -110,4 +110,7 @@
     <string name="zoom_in">Zoom in</string>
     <string name="zoom_out">Zoom out</string>
     <string name="recognition_upload_notice">Confirm to crop the characters and start cloud recognition automatically.</string>
+    <string name="history_restore">Restore image and adjust</string>
+    <string name="history_error">Could not read or update history. Please try again.</string>
+    <string name="history_save_error">Recognition finished, but the image could not be saved to history.</string>
 </resources>

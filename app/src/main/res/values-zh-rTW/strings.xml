@@ -66,14 +66,14 @@
     <string name="rate_limit">請求較多，請稍等後重試。</string>
     <string name="upload_title">上傳字圖識別？</string>
     <string name="upload_notice">所選字圖將上傳至 cyeam.com 雲端識別。服務可能保留字圖、結果和 IP 用於識別除錯，請避免上傳含隱私資訊的圖片。</string>
-    <string name="history_empty">最近識別過的候選字將顯示在這裡。</string>
+    <string name="history_empty">識別過的圖片和候選字將顯示在這裡。</string>
     <string name="clear_history">清空記錄</string>
     <string name="language">語言</string>
     <string name="system_language">跟隨系統</string>
     <string name="analytics">使用統計</string>
     <string name="analytics_notice">Google Analytics 記錄使用事件與數量，統計事件不包含圖片或識別文字，可在此關閉蒐集。</string>
     <string name="privacy">隱私說明</string>
-    <string name="privacy_details">裁剪在本機完成。提交的字圖傳送至 cyeam.com 及其 OCR 服務，服務可能儲存字圖、結果和 IP 用於除錯。最近 50 筆候選記錄儲存在本機，可在歷史記錄中清空。啟用統計時 Firebase Analytics 蒐集應用程式使用情況，可在設定中關閉。無需註冊帳號。</string>
+    <string name="privacy_details">裁剪在本機完成。提交的字圖傳送至 cyeam.com 及其 OCR 服務，服務可能儲存字圖、結果和 IP 用於除錯。識別圖片及候選字儲存在本機，最多 50 筆、圖片合計不超過 32 MB，可在歷史記錄中刪除或清空。啟用統計時 Firebase Analytics 蒐集應用程式使用情況，可在設定中關閉。無需註冊帳號。</string>
     <string name="app_update">應用程式更新</string>
     <string name="check_update">檢查更新</string>
     <string name="checking_update">正在檢查更新…</string>
@@ -110,4 +110,7 @@
     <string name="zoom_in">放大</string>
     <string name="zoom_out">縮小</string>
     <string name="recognition_upload_notice">確認後將截取所有單字圖，並自動上傳識別。</string>
+    <string name="history_restore">回填圖片並調整</string>
+    <string name="history_error">歷史記錄讀取或更新失敗，請重試。</string>
+    <string name="history_save_error">識別已完成，但圖片未能儲存到歷史記錄。</string>
 </resources>

@@ -66,14 +66,14 @@
     <string name="rate_limit">Demasiadas solicitudes. Espera antes de reintentar.</string>
     <string name="upload_title">¿Subir los recortes?</string>
     <string name="upload_notice">Los recortes se enviarán a cyeam.com. El servicio puede guardar imágenes, resultados e IP para depurar el OCR. Evita datos privados.</string>
-    <string name="history_empty">Aquí aparecerán los candidatos recientes.</string>
+    <string name="history_empty">Aquí aparecerán las imágenes y los candidatos reconocidos.</string>
     <string name="clear_history">Borrar historial</string>
     <string name="language">Idioma</string>
     <string name="system_language">Idioma del sistema</string>
     <string name="analytics">Estadísticas de uso</string>
     <string name="analytics_notice">Google Analytics registra eventos y cantidades, sin imágenes ni texto reconocido. Puedes desactivarlo aquí.</string>
     <string name="privacy">Privacidad</string>
-    <string name="privacy_details">El recorte es local. cyeam.com y su proveedor OCR procesan las imágenes y pueden conservarlas con resultados e IP para depuración. Las últimas 50 listas de candidatos se guardan en el dispositivo y se borran en Historial. Firebase Analytics recoge el uso si está activado; se desactiva en Ajustes. No requiere cuenta.</string>
+    <string name="privacy_details">El recorte es local. cyeam.com y su proveedor OCR procesan las imágenes y pueden conservarlas con resultados e IP para depuración. Se guardan hasta 50 imágenes reconocidas y sus candidatos en el dispositivo, con un límite de 32 MB de imágenes, y pueden borrarse en Historial. Firebase Analytics recoge el uso si está activado; se desactiva en Ajustes. No requiere cuenta.</string>
     <string name="app_update">Actualización</string>
     <string name="check_update">Buscar actualizaciones</string>
     <string name="checking_update">Buscando actualizaciones…</string>
@@ -110,4 +110,7 @@
     <string name="zoom_in">Ampliar</string>
     <string name="zoom_out">Reducir</string>
     <string name="recognition_upload_notice">Confirma para recortar los caracteres e iniciar el reconocimiento en la nube.</string>
+    <string name="history_restore">Restaurar y ajustar imagen</string>
+    <string name="history_error">No se pudo leer o actualizar el historial. Inténtalo de nuevo.</string>
+    <string name="history_save_error">Reconocimiento terminado, pero no se pudo guardar la imagen en el historial.</string>
 </resources>

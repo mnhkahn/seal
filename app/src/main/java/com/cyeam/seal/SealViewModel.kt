@@ -8,13 +8,12 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.cyeam.seal.ocr.*
 import com.cyeam.seal.editor.*
+import com.cyeam.seal.history.HistoryRecord
+import com.cyeam.seal.history.HistoryStore
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import org.json.JSONArray
-import org.json.JSONObject
 import java.io.ByteArrayOutputStream
-import java.io.File
 import kotlin.math.roundToInt
 
 data class Glyph(
@@ -39,7 +38,29 @@ class SealViewModel(app: Application) : AndroidViewModel(app) {
     val boxViewport = BoxViewport()
     val handwriting = StrokeHistory()
     private var job: Job? = null
-    val historyFile = File(app.filesDir, "history.json")
+    val history = HistoryStore(app.filesDir)
+
+    fun restoreHistory(record: HistoryRecord): Boolean {
+        val current = mutable.value
+        val file = record.image ?: return false
+        if (current.busy || current.glyphs.any { it.feedbackPending }) return false
+        mutable.value = current.copy(busy = true, message = 0)
+        job = viewModelScope.launch {
+            try {
+                val bitmap = withContext(Dispatchers.IO) {
+                    ImageDecoder.decodeBitmap(ImageDecoder.createSource(file)) { decoder, _, _ ->
+                        decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
+                    }
+                }
+                val box = Box(0, 0, bitmap.width, bitmap.height)
+                boxEditor.reset(listOf(box)); boxViewport.reset()
+                mutable.value = SealState(image = bitmap, glyphs = listOf(Glyph(box)),
+                    vertical = current.vertical, ink = current.ink, selectedBox = boxEditor.selected)
+            } catch (e: CancellationException) { throw e }
+            catch (_: Exception) { mutable.value = current.copy(message = R.string.history_error) }
+        }
+        return true
+    }
 
     fun loadClipboardImage(bitmap: Bitmap) {
         val current = mutable.value
@@ -188,7 +209,13 @@ class SealViewModel(app: Application) : AndroidViewModel(app) {
                         if(candidates.isEmpty()) glyph.copy(error = R.string.no_candidates, candidates = emptyList(), decision = 0)
                         else {
                             success++
-                            saveHistory(candidates)
+                            withContext(Dispatchers.IO) {
+                                runCatching { history.add(bytes, candidates) }.onFailure {
+                                    withContext(Dispatchers.Main) {
+                                        mutable.value = mutable.value.copy(message = R.string.history_save_error)
+                                    }
+                                }
+                            }
                             analytics.event("seal_result_view", "candidate_count" to candidates.size)
                             glyph.copy(candidates = candidates, selected = 0, error = 0, decision = 0, feedbackToken = result.feedbackToken)
                         }
@@ -206,15 +233,6 @@ class SealViewModel(app: Application) : AndroidViewModel(app) {
                 }
                 analytics.event("seal_recognition_complete", "glyph_count" to indices.size, "success_count" to success, "failure_count" to indices.size - success)
             } finally { mutable.value = mutable.value.copy(busy = false) }
-        }
-    }
-    private suspend fun saveHistory(candidates: List<Candidate>) = withContext(Dispatchers.IO) {
-        runCatching {
-            val old = if(historyFile.exists()) JSONArray(historyFile.readText()) else JSONArray()
-            val fresh = JSONArray().put(JSONObject().put("time",System.currentTimeMillis()).put("text",candidates.joinToString(" · ") { it.text }))
-            for(i in 0 until minOf(old.length(),49)) fresh.put(old.getJSONObject(i))
-            val temp = File(historyFile.parentFile,"history.tmp")
-            temp.writeText(fresh.toString()); check(temp.renameTo(historyFile))
         }
     }
 }
