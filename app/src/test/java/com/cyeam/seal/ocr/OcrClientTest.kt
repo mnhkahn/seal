@@ -11,6 +11,13 @@ import java.util.concurrent.atomic.AtomicReference
 import java.util.concurrent.atomic.AtomicInteger
 
 class OcrClientTest {
+    @Test fun retainsRelatedVariantsWithoutInventingRecognitionScores() {
+        val result = OcrClient.parse("""[{"char":"粦","score":0.8,"variants":["㷠","燐","㷠","粦","",null,"两个"]}]""")
+        assertEquals(1, result.size)
+        assertEquals(listOf("㷠", "燐"), result.single().variants)
+        assertEquals("粦", result.single().text)
+        assertEquals(0.8, result.single().score!!, 0.001)
+    }
     @Test fun providesMissingFontReferenceForVariantsAcrossUnicodePlanes() {
         val variant = OcrClient.parse("""[{"char":"㷠"}]""").single()
         assertEquals("㷠", variant.text)

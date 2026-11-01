@@ -244,7 +244,8 @@ class MainActivity : AppCompatActivity() {
         // The reference image displays rare characters even without a system glyph.
         // Keep the code point visible so a failed image request remains identifiable.
         val character=if(c.unicodeImage.isNotBlank()) c.unicodeLabel() else c.text
-        return listOf(character+standard,match,score).filter { it.isNotBlank() }.joinToString(" · ")
+        val variants=if(c.variants.isEmpty()) "" else c.variants.joinToString("、", "（", "）")
+        return listOf(character+variants+standard,match,score).filter { it.isNotBlank() }.joinToString(" · ")
     }
     private fun startRecognition(index: Int?=null) { model.recognize(index) }
     private fun showHandwriting() {

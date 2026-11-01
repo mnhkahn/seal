@@ -13,7 +13,7 @@ import java.util.UUID
 data class Candidate(
     val text: String, val score: Double? = null, val matchType: String = "",
     val component: String = "", val work: String = "", val codepoint: String = "",
-    val glyphImage: String = "", val unicodeImage: String = ""
+    val glyphImage: String = "", val unicodeImage: String = "", val variants: List<String> = emptyList()
 ) {
     /** Use a reference glyph when the device font cannot draw a single character. */
     fun displayUnicodeImage(fontHasGlyph: Boolean): String {
@@ -105,9 +105,15 @@ object OcrClient {
                     fun image(vararg keys: String): String = keys.firstNotNullOfOrNull {
                         value.optString(it).takeIf { url -> url.startsWith("https://") }
                     }.orEmpty()
+                    val rawVariants = value.optJSONArray("variants") ?: JSONArray()
+                    val variants = (0 until rawVariants.length()).mapNotNull { index ->
+                        (rawVariants.opt(index) as? String)?.takeIf {
+                            it != text && it.isNotBlank() && it.codePointCount(0, it.length) == 1
+                        }
+                    }.distinct().take(20)
                     Candidate(text, score, value.optString("match_type"), value.optString("component"),
                         listOf("author", "work", "page").map { value.optString(it) }.filter { it.isNotBlank() }.joinToString(" · "),
-                        value.optString("codepoint"), image("glyph_image", "glyph_image_url", "image_url", "image"), image("unicode_glyph_image"))
+                        value.optString("codepoint"), image("glyph_image", "glyph_image_url", "image_url", "image"), image("unicode_glyph_image"), variants)
                 }
                 else -> null
             }

@@ -6,6 +6,9 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.RippleDrawable
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.ImageSpan
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +21,7 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatSpinner
 import coil.ImageLoader
 import coil.load
+import coil.request.ImageRequest
 import com.cyeam.seal.ocr.Candidate
 
 /** An anchored, image-rich dropdown matching the website's candidate selector. */
@@ -94,6 +98,26 @@ class CandidateDropdown(
             textSize = if (compact) 16f else 17f
             setTextColor(0xFF343A40.toInt())
             if (chosen) setTypeface(typeface, Typeface.BOLD)
+            for (variant in candidate.variants) {
+                if (paint.hasGlyph(variant)) continue
+                val start = text.indexOf(variant)
+                if (start < 0) continue
+                val glyphSize = (textSize * 1.25f).toInt()
+                val request = imageLoader.enqueue(ImageRequest.Builder(context)
+                    .data(Candidate(variant).displayUnicodeImage(false))
+                    .size(glyphSize, glyphSize)
+                    .target(onSuccess = { drawable ->
+                        drawable.setBounds(0, 0, glyphSize, glyphSize)
+                        text = SpannableString(text).apply {
+                            setSpan(ImageSpan(drawable, ImageSpan.ALIGN_BASELINE), start,
+                                start + variant.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                        }
+                    }).build())
+                addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+                    override fun onViewAttachedToWindow(view: View) = Unit
+                    override fun onViewDetachedFromWindow(view: View) { request.dispose() }
+                })
+            }
             // Allow wrapping so scores and rare-character hints survive font scaling.
         })
         if (!compact && candidate.work.isNotBlank()) {
