@@ -241,9 +241,9 @@ class MainActivity : AppCompatActivity() {
         }
         val standard=if(c.text=="䝿" || c.text=="貴") "（"+getString(R.string.standard_character,"贵")+"）" else ""
         val score=c.score?.let { String.format(resources.configuration.locales[0],"%.1f%%",it*100) }.orEmpty()
-        // As on the website, use the Unicode reference image for rare characters
-        // instead of showing a missing-font square alongside it.
-        val character=if(c.unicodeImage.isNotBlank()) "" else c.text
+        // The reference image displays rare characters even without a system glyph.
+        // Keep the code point visible so a failed image request remains identifiable.
+        val character=if(c.unicodeImage.isNotBlank()) c.unicodeLabel() else c.text
         return listOf(character+standard,match,score).filter { it.isNotBlank() }.joinToString(" · ")
     }
     private fun startRecognition(index: Int?=null) { model.recognize(index) }

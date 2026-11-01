@@ -14,7 +14,17 @@ data class Candidate(
     val text: String, val score: Double? = null, val matchType: String = "",
     val component: String = "", val work: String = "", val codepoint: String = "",
     val glyphImage: String = "", val unicodeImage: String = ""
-)
+) {
+    /** Use a reference glyph when the device font cannot draw a single character. */
+    fun displayUnicodeImage(fontHasGlyph: Boolean): String {
+        if (unicodeImage.isNotBlank()) return unicodeImage
+        if (fontHasGlyph || text.isEmpty() || text.codePointCount(0, text.length) != 1) return ""
+        return "https://glyphwiki.org/glyph/u${text.codePointAt(0).toString(16)}.svg"
+    }
+
+    fun unicodeLabel(): String = text.codePoints().toArray()
+        .joinToString(" ") { "U+" + it.toString(16).uppercase().padStart(4, '0') }
+}
 data class RecognitionResult(val candidates: List<Candidate>, val feedbackToken: String = "")
 class OcrException(val status: Int) : Exception("OCR HTTP $status")
 

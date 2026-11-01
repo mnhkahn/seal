@@ -11,6 +11,19 @@ import java.util.concurrent.atomic.AtomicReference
 import java.util.concurrent.atomic.AtomicInteger
 
 class OcrClientTest {
+    @Test fun providesMissingFontReferenceForVariantsAcrossUnicodePlanes() {
+        val variant = OcrClient.parse("""[{"char":"㷠"}]""").single()
+        assertEquals("㷠", variant.text)
+        assertEquals("https://glyphwiki.org/glyph/u3de0.svg", variant.displayUnicodeImage(false))
+        assertEquals("U+3DE0", variant.unicodeLabel())
+        assertEquals("", variant.displayUnicodeImage(true))
+        assertEquals("https://glyphwiki.org/glyph/u221f7.svg", Candidate("𢇷").displayUnicodeImage(false))
+        assertEquals("U+221F7", Candidate("𢇷").unicodeLabel())
+        assertEquals("", Candidate("女字").displayUnicodeImage(false))
+        assertEquals("", Candidate("").displayUnicodeImage(false))
+        assertEquals("https://example.com/variant.svg",
+            variant.copy(unicodeImage = "https://example.com/variant.svg").displayUnicodeImage(true))
+    }
     @Test fun readsWrappedJsonStringAndRanksWholeMatchesFirst() {
         val body="""{"code":0,"result":"{\"matches\":[{\"char\":\"女\",\"match_type\":\"component\",\"score\":0.99},{\"char\":\"䝿\",\"match_type\":\"whole\",\"prob\":\"85%\",\"unicode_glyph_image\":\"https://glyphwiki.org/glyph/u477f.svg\"}]}"}"""
         val parsed=OcrClient.parse(body)

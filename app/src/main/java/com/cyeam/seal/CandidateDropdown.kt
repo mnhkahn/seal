@@ -42,7 +42,7 @@ class CandidateDropdown(
             dropDownHorizontalOffset = -paddingLeft
         }
         val choice = selected.coerceIn(candidates.indices)
-        contentDescription = context.getString(R.string.candidates) + ": " + label(candidates[choice])
+        contentDescription = context.getString(R.string.candidates) + ": " + candidates[choice].text + " · " + label(candidates[choice])
         adapter = object : BaseAdapter() {
             override fun getCount() = candidates.size
             override fun getItem(position: Int) = candidates[position]
@@ -66,15 +66,18 @@ class CandidateDropdown(
         candidate: Candidate, compact: Boolean, chosen: Boolean,
         imageLoader: ImageLoader, label: (Candidate) -> String
     ): View {
+        val characterPaint = TextView(context).paint
+        val displayCandidate = candidate.copy(unicodeImage = candidate.displayUnicodeImage(characterPaint.hasGlyph(candidate.text)))
         val line = LinearLayout(context).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
             minimumHeight = dp(if (compact) 48 else 68)
             setPadding(dp(if (compact) 0 else 12), dp(8), dp(if (compact) 0 else 12), dp(8))
             if (chosen) setBackgroundColor(0xFFEEF3F8.toInt())
+            contentDescription = candidate.text + " · " + label(displayCandidate)
         }
         val size = dp(if (compact) 28 else 36)
-        for (url in listOf(candidate.glyphImage, candidate.unicodeImage).filter { it.isNotBlank() }.distinct()) {
+        for (url in listOf(candidate.glyphImage, displayCandidate.unicodeImage).filter { it.isNotBlank() }.distinct()) {
             line.addView(ImageView(context).apply {
                 scaleType = ImageView.ScaleType.FIT_CENTER
                 background = GradientDrawable().apply {
@@ -87,7 +90,7 @@ class CandidateDropdown(
         }
         val words = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
         words.addView(TextView(context).apply {
-            text = label(candidate)
+            text = label(displayCandidate)
             textSize = if (compact) 16f else 17f
             setTextColor(0xFF343A40.toInt())
             if (chosen) setTypeface(typeface, Typeface.BOLD)
