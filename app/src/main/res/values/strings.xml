@@ -114,4 +114,10 @@
     <string name="history_error">Could not read or update history. Please try again.</string>
     <string name="history_save_error">Recognition finished, but the image could not be saved to history.</string>
     <string name="pen_width">Pen width</string>
+    <string name="history_image_actions">Image actions</string>
+    <string name="download_image">Download image</string>
+    <string name="save_to_photos">Save to photos</string>
+    <string name="copy_image">Copy image</string>
+    <string name="image_saved">Image saved</string>
+    <string name="image_action_error">Could not save or copy the image. Please try again.</string>
 </resources>

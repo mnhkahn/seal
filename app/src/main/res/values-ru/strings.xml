@@ -114,4 +114,10 @@
     <string name="history_error">Не удалось прочитать или обновить историю. Повторите попытку.</string>
     <string name="history_save_error">Распознавание завершено, но изображение не удалось сохранить в истории.</string>
     <string name="pen_width">Толщина линии</string>
+    <string name="history_image_actions">Действия с изображением</string>
+    <string name="download_image">Скачать изображение</string>
+    <string name="save_to_photos">Сохранить в фото</string>
+    <string name="copy_image">Копировать изображение</string>
+    <string name="image_saved">Изображение сохранено</string>
+    <string name="image_action_error">Не удалось сохранить или скопировать изображение. Повторите попытку.</string>
 </resources>

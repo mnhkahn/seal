@@ -114,4 +114,10 @@
     <string name="history_error">Verlauf konnte nicht gelesen oder geändert werden. Erneut versuchen.</string>
     <string name="history_save_error">Erkennung abgeschlossen, aber das Bild konnte nicht im Verlauf gespeichert werden.</string>
     <string name="pen_width">Strichstärke</string>
+    <string name="history_image_actions">Bildaktionen</string>
+    <string name="download_image">Bild herunterladen</string>
+    <string name="save_to_photos">In Fotos speichern</string>
+    <string name="copy_image">Bild kopieren</string>
+    <string name="image_saved">Bild gespeichert</string>
+    <string name="image_action_error">Das Bild konnte nicht gespeichert oder kopiert werden. Bitte erneut versuchen.</string>
 </resources>

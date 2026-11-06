@@ -114,4 +114,10 @@
     <string name="history_error">기록을 읽거나 수정할 수 없습니다. 다시 시도하세요.</string>
     <string name="history_save_error">인식은 완료되었지만 이미지를 기록에 저장하지 못했습니다.</string>
     <string name="pen_width">획 굵기</string>
+    <string name="history_image_actions">이미지 작업</string>
+    <string name="download_image">이미지 다운로드</string>
+    <string name="save_to_photos">사진에 저장</string>
+    <string name="copy_image">이미지 복사</string>
+    <string name="image_saved">이미지를 저장했습니다</string>
+    <string name="image_action_error">이미지를 저장하거나 복사할 수 없습니다. 다시 시도하세요.</string>
 </resources>

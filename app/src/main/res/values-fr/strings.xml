@@ -114,4 +114,10 @@
     <string name="history_error">Lecture ou mise à jour de l’historique impossible. Réessayez.</string>
     <string name="history_save_error">Reconnaissance terminée, mais l’image n’a pas pu être enregistrée dans l’historique.</string>
     <string name="pen_width">Épaisseur du trait</string>
+    <string name="history_image_actions">Actions sur l’image</string>
+    <string name="download_image">Télécharger l’image</string>
+    <string name="save_to_photos">Enregistrer dans les photos</string>
+    <string name="copy_image">Copier l’image</string>
+    <string name="image_saved">Image enregistrée</string>
+    <string name="image_action_error">Impossible d’enregistrer ou de copier l’image. Réessayez.</string>
 </resources>

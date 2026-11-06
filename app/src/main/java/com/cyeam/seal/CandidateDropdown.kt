@@ -45,7 +45,7 @@ class CandidateDropdown(
             dropDownWidth = right - left
             dropDownHorizontalOffset = -paddingLeft
         }
-        val choice = selected.coerceIn(candidates.indices)
+        var choice = selected.coerceIn(candidates.indices)
         contentDescription = context.getString(R.string.candidates) + ": " + candidates[choice].text + " · " + label(candidates[choice])
         adapter = object : BaseAdapter() {
             override fun getCount() = candidates.size
@@ -60,7 +60,12 @@ class CandidateDropdown(
         onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 // Binding the current result must not emit a user-selection event.
-                if (position != choice) onSelect(position)
+                if (position != choice) {
+                    choice = position
+                    contentDescription = context.getString(R.string.candidates) + ": " + candidates[position].text
+                    (adapter as BaseAdapter).notifyDataSetChanged()
+                    onSelect(position)
+                }
             }
             override fun onNothingSelected(parent: AdapterView<*>?) = Unit
         }
@@ -100,11 +105,12 @@ class CandidateDropdown(
             if (chosen) setTypeface(typeface, Typeface.BOLD)
             for (variant in candidate.variants) {
                 if (paint.hasGlyph(variant)) continue
+                val url = Candidate(variant).displayUnicodeImage(false)
                 val start = text.indexOf(variant)
                 if (start < 0) continue
                 val glyphSize = (textSize * 1.25f).toInt()
-                val request = imageLoader.enqueue(ImageRequest.Builder(context)
-                    .data(Candidate(variant).displayUnicodeImage(false))
+                fun requestGlyph() = imageLoader.enqueue(ImageRequest.Builder(context)
+                    .data(url)
                     .size(glyphSize, glyphSize)
                     .target(onSuccess = { drawable ->
                         drawable.setBounds(0, 0, glyphSize, glyphSize)
@@ -114,8 +120,9 @@ class CandidateDropdown(
                         }
                     }).build())
                 addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
-                    override fun onViewAttachedToWindow(view: View) = Unit
-                    override fun onViewDetachedFromWindow(view: View) { request.dispose() }
+                    private var request: coil.request.Disposable? = null
+                    override fun onViewAttachedToWindow(view: View) { request = requestGlyph() }
+                    override fun onViewDetachedFromWindow(view: View) { request?.dispose(); request = null }
                 })
             }
             // Allow wrapping so scores and rare-character hints survive font scaling.

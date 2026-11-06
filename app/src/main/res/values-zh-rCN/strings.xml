@@ -114,4 +114,10 @@
     <string name="history_error">历史记录读取或更新失败，请重试。</string>
     <string name="history_save_error">识别已完成，但图片未能保存到历史记录。</string>
     <string name="pen_width">笔画粗细</string>
+    <string name="history_image_actions">图片操作</string>
+    <string name="download_image">下载图片</string>
+    <string name="save_to_photos">保存到相册</string>
+    <string name="copy_image">复制图片</string>
+    <string name="image_saved">图片已保存</string>
+    <string name="image_action_error">图片保存或复制失败，请重试。</string>
 </resources>

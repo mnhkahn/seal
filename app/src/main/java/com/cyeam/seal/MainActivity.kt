@@ -39,8 +39,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.text.DateFormat
-import java.util.Date
 
 class MainActivity : AppCompatActivity() {
     private val model: SealViewModel by viewModels()
@@ -54,6 +52,7 @@ class MainActivity : AppCompatActivity() {
     private var manualUpdateCheck=false
     private var lastPromptedUpdate: String?=null
     private val imageLoader by lazy { ImageLoader.Builder(this).components { add(SvgDecoder.Factory()) }.build() }
+    private val historyImages=HistoryImageActions(this)
     private val picker=registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri -> uri?.let { model.load(it) } }
     private val camera=registerForActivityResult(ActivityResultContracts.TakePicture()) { ok ->
         if(ok) model.cameraUri?.let { model.load(it) }
@@ -241,9 +240,7 @@ class MainActivity : AppCompatActivity() {
         }
         val standard=if(c.text=="䝿" || c.text=="貴") "（"+getString(R.string.standard_character,"贵")+"）" else ""
         val score=c.score?.let { String.format(resources.configuration.locales[0],"%.1f%%",it*100) }.orEmpty()
-        // The reference image displays rare characters even without a system glyph.
-        // Keep the code point visible so a failed image request remains identifiable.
-        val character=if(c.unicodeImage.isNotBlank()) c.unicodeLabel() else c.text
+        val character=if(c.unicodeImage.isNotBlank()) "" else c.text
         val variants=if(c.variants.isEmpty()) "" else c.variants.joinToString("、", "（", "）")
         return listOf(character+variants+standard,match,score).filter { it.isNotBlank() }.joinToString(" · ")
     }
@@ -338,20 +335,20 @@ class MainActivity : AppCompatActivity() {
                 if(entries.isEmpty()) list.addView(label(getString(R.string.history_empty),16))
                 for(item in entries) {
                     val panel=card()
-                    panel.addView(label(DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT).format(Date(item.time)),12))
                     if(item.image!=null) {
                         panel.addView(ImageView(this@MainActivity).apply {
                             scaleType=ImageView.ScaleType.FIT_CENTER
-                            contentDescription=getString(R.string.history_restore)
-                            load(item.image,imageLoader) { size(dp(160),dp(160)) }
-                            setOnClickListener { if(model.restoreHistory(item)) dialog.dismiss() }
+                            contentDescription=getString(R.string.history_image_actions)
+                            load(item.image,imageLoader) { size(dp(240),dp(240)) }
+                            setOnLongClickListener { historyImages.show(item.image); true }
                         },LinearLayout.LayoutParams(-1,dp(144)))
-                        panel.addView(button(R.string.history_restore,false) {
-                            if(model.restoreHistory(item)) dialog.dismiss()
-                        })
                     }
-                    val summary=if(item.candidates.isEmpty()) item.text else item.candidates.take(5).joinToString("\n",transform=::candidateLabel)
-                    panel.addView(label(summary,17).apply { setTextIsSelectable(true) })
+                    val candidates=item.candidates.ifEmpty {
+                        item.text.split(" · ").map { it.trim() }.filter { it.isNotEmpty() }.map { Candidate(it) }
+                    }
+                    if(candidates.isNotEmpty()) {
+                        panel.addView(CandidateDropdown(this@MainActivity,candidates,0,imageLoader,::candidateLabel) {},LinearLayout.LayoutParams(-1,-2))
+                    }
                     panel.addView(button(R.string.delete,false) {
                         lifecycleScope.launch {
                             val deleted=withContext(Dispatchers.IO) { runCatching { model.history.delete(item.id) }.isSuccess }

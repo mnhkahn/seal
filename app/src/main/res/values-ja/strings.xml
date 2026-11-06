@@ -114,4 +114,10 @@
     <string name="history_error">履歴の読み込み・更新に失敗しました。再試行してください。</string>
     <string name="history_save_error">認識は完了しましたが、画像を履歴に保存できませんでした。</string>
     <string name="pen_width">線の太さ</string>
+    <string name="history_image_actions">画像の操作</string>
+    <string name="download_image">画像をダウンロード</string>
+    <string name="save_to_photos">写真に保存</string>
+    <string name="copy_image">画像をコピー</string>
+    <string name="image_saved">画像を保存しました</string>
+    <string name="image_action_error">画像の保存またはコピーに失敗しました。再試行してください。</string>
 </resources>

@@ -114,4 +114,10 @@
     <string name="history_error">Não foi possível ler ou atualizar o histórico. Tente novamente.</string>
     <string name="history_save_error">Reconhecimento concluído, mas não foi possível salvar a imagem no histórico.</string>
     <string name="pen_width">Espessura do traço</string>
+    <string name="history_image_actions">Ações da imagem</string>
+    <string name="download_image">Baixar imagem</string>
+    <string name="save_to_photos">Salvar nas fotos</string>
+    <string name="copy_image">Copiar imagem</string>
+    <string name="image_saved">Imagem salva</string>
+    <string name="image_action_error">Não foi possível salvar ou copiar a imagem. Tente novamente.</string>
 </resources>

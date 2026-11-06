@@ -84,7 +84,8 @@ class ClipboardImagePrompt(
                     ?.let(Uri::parse)
                 uri?.takeIf { it.scheme in setOf("content", "file", "android.resource") }
             }
-            if (uris.isEmpty()) return
+            // Images copied from our own history are already in the app.
+            if (uris.isEmpty() || uris.all { it.authority == "${activity.packageName}.fileprovider" && it.path?.startsWith("/history_export/") == true }) return
             val timestamp = clip.description.timestamp
             // Keep only an opaque identifier, never the clipboard URI or image, in preferences.
             val fingerprint = MessageDigest.getInstance("SHA-256")
