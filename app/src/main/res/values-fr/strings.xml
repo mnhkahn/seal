@@ -113,4 +113,5 @@
     <string name="history_restore">Restaurer et ajuster l’image</string>
     <string name="history_error">Lecture ou mise à jour de l’historique impossible. Réessayez.</string>
     <string name="history_save_error">Reconnaissance terminée, mais l’image n’a pas pu être enregistrée dans l’historique.</string>
+    <string name="pen_width">Épaisseur du trait</string>
 </resources>

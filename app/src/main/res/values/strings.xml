@@ -113,4 +113,5 @@
     <string name="history_restore">Restore image and adjust</string>
     <string name="history_error">Could not read or update history. Please try again.</string>
     <string name="history_save_error">Recognition finished, but the image could not be saved to history.</string>
+    <string name="pen_width">Pen width</string>
 </resources>

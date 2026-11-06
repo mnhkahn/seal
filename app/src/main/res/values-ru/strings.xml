@@ -113,4 +113,5 @@
     <string name="history_restore">Восстановить и изменить изображение</string>
     <string name="history_error">Не удалось прочитать или обновить историю. Повторите попытку.</string>
     <string name="history_save_error">Распознавание завершено, но изображение не удалось сохранить в истории.</string>
+    <string name="pen_width">Толщина линии</string>
 </resources>

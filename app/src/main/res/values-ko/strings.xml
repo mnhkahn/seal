@@ -113,4 +113,5 @@
     <string name="history_restore">이미지 복원 및 조정</string>
     <string name="history_error">기록을 읽거나 수정할 수 없습니다. 다시 시도하세요.</string>
     <string name="history_save_error">인식은 완료되었지만 이미지를 기록에 저장하지 못했습니다.</string>
+    <string name="pen_width">획 굵기</string>
 </resources>

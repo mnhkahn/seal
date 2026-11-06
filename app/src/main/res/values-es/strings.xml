@@ -113,4 +113,5 @@
     <string name="history_restore">Restaurar y ajustar imagen</string>
     <string name="history_error">No se pudo leer o actualizar el historial. Inténtalo de nuevo.</string>
     <string name="history_save_error">Reconocimiento terminado, pero no se pudo guardar la imagen en el historial.</string>
+    <string name="pen_width">Grosor del trazo</string>
 </resources>

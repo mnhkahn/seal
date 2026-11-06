@@ -113,4 +113,5 @@
     <string name="history_restore">回填圖片並調整</string>
     <string name="history_error">歷史記錄讀取或更新失敗，請重試。</string>
     <string name="history_save_error">識別已完成，但圖片未能儲存到歷史記錄。</string>
+    <string name="pen_width">筆畫粗細</string>
 </resources>

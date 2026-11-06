@@ -14,6 +14,17 @@ class StrokeHistoryTest {
         assertTrue(h.undo());assertEquals(0,h.count)
         assertFalse(h.undo());assertEquals(0,h.count)
     }
+    @Test fun keepsEachStrokeWidthThroughUndoAndClear() {
+        val h=StrokeHistory()
+        val dot=listOf(StrokePoint(.3f,.4f))
+        h.add(dot,.03f); h.add(dot,.08f)
+        assertEquals(.03f,h.widthAt(0),0f)
+        assertEquals(.08f,h.widthAt(1),0f)
+        h.undo(); h.add(dot,.05f)
+        assertEquals(.05f,h.widthAt(1),0f)
+        h.clear(); h.add(dot)
+        assertEquals(h.defaultWidth,h.widthAt(0),0f)
+    }
     @Test fun preservesDotStrokesAndDoesNotRecordEmptyOrMutableDrafts() {
         val h=StrokeHistory();h.add(emptyList());assertEquals(0,h.count)
         val draft=mutableListOf(StrokePoint(.3f,.4f));h.add(draft);draft.clear()

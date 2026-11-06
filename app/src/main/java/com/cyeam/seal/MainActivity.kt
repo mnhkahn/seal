@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sourceButtons: LinearLayout
     private lateinit var clipboardImages: ClipboardImagePrompt
     private var handwritingOpen=false
-    private var handwritingDialog: androidx.appcompat.app.AlertDialog?=null
+    private var handwritingDialog: androidx.appcompat.app.AppCompatDialog?=null
     private var manualUpdateCheck=false
     private var lastPromptedUpdate: String?=null
     private val imageLoader by lazy { ImageLoader.Builder(this).components { add(SvgDecoder.Factory()) }.build() }
@@ -251,39 +251,69 @@ class MainActivity : AppCompatActivity() {
     private fun showHandwriting() {
         if(handwritingDialog?.isShowing==true || model.state.value.busy || model.state.value.glyphs.any { it.feedbackPending }) return
         handwritingOpen=true
-        val container=column(16)
-        container.addView(label(getString(R.string.handwriting_single),15,true))
+        val dialog=androidx.appcompat.app.AppCompatDialog(this,R.style.Theme_Seal)
+        handwritingDialog=dialog
+        val root=column(16)
+        root.addView(label(getString(R.string.handwriting),22,true))
+        val container=column(0)
+        container.addView(label(getString(R.string.handwriting_single),13))
         val view=HandwritingView(this,model.handwriting)
-        val side=minOf(dp(300),resources.displayMetrics.widthPixels-dp(96)).coerceAtLeast(dp(160))
+        val metrics=resources.displayMetrics
+        val side=minOf(dp(600),metrics.widthPixels-dp(32),metrics.heightPixels-dp(420)).coerceAtLeast(dp(160))
         container.addView(view,LinearLayout.LayoutParams(side,side).apply { gravity=Gravity.CENTER_HORIZONTAL })
         val count=label(getString(R.string.stroke_count,model.handwriting.count),13)
         container.addView(count)
+        container.addView(label(getString(R.string.pen_width),13))
+        container.addView(SeekBar(this).apply {
+            max=40; progress=10
+            contentDescription=getString(R.string.pen_width)
+            setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(bar: SeekBar?, progress: Int, fromUser: Boolean) {
+                    view.penWidth=(progress+10)*resources.displayMetrics.density/side
+                }
+                override fun onStartTrackingTouch(bar: SeekBar?) {}
+                override fun onStopTrackingTouch(bar: SeekBar?) {}
+            })
+            view.penWidth=20f*resources.displayMetrics.density/side
+        },LinearLayout.LayoutParams(-1,dp(48)))
         val actions=row()
         val undo=button(R.string.undo_stroke,false) { view.undo() }
         val clear=button(R.string.clear_drawing,false) { view.clear() }
         actions.addView(undo,weight());actions.addView(clear,weight());container.addView(actions)
-        val dialog=MaterialAlertDialogBuilder(this).setTitle(R.string.handwriting)
-            .setView(ScrollView(this).apply { addView(container) }).setNegativeButton(R.string.cancel,null)
-            .setPositiveButton(R.string.handwriting_submit,null).create()
-        handwritingDialog=dialog
-        fun update() {
-            val hasStrokes=model.handwriting.count>0
-            count.text=getString(R.string.stroke_count,model.handwriting.count)
-            undo.isEnabled=hasStrokes;clear.isEnabled=hasStrokes
-            dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)?.isEnabled=hasStrokes
-        }
-        view.onChanged={ update() }
-        dialog.setOnShowListener {
-            update()
-            dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                if(model.handwriting.count==0) return@setOnClickListener
+        root.addView(ScrollView(this).apply { addView(container) },LinearLayout.LayoutParams(-1,0,1f))
+        val footer=row()
+        footer.addView(button(R.string.cancel,false) { dialog.dismiss() },weight())
+        val submit=button(R.string.handwriting_submit) {
+            if(model.handwriting.count>0) {
                 val bitmap=view.exportSingleCharacter()
                 dialog.dismiss()
                 model.recognizeHandwriting(bitmap)
             }
         }
+        footer.addView(submit,weight());root.addView(footer)
+        fun update() {
+            val hasStrokes=model.handwriting.count>0
+            count.text=getString(R.string.stroke_count,model.handwriting.count)
+            undo.isEnabled=hasStrokes;clear.isEnabled=hasStrokes;submit.isEnabled=hasStrokes
+        }
+        view.onChanged={ update() }
+        update()
+        ViewCompat.setOnApplyWindowInsetsListener(root) { v,insets ->
+            val bars=insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            v.setPadding(dp(16)+bars.left,dp(16)+bars.top,dp(16)+bars.right,dp(16)+bars.bottom)
+            insets
+        }
+        dialog.setContentView(root)
         dialog.setOnDismissListener { handwritingOpen=false;handwritingDialog=null }
         dialog.show()
+        dialog.window?.let { window ->
+            window.setLayout(android.view.ViewGroup.LayoutParams.MATCH_PARENT,android.view.ViewGroup.LayoutParams.MATCH_PARENT)
+            WindowInsetsControllerCompat(window,root).apply {
+                isAppearanceLightStatusBars=true
+                isAppearanceLightNavigationBars=true
+            }
+        }
+        ViewCompat.requestApplyInsets(root)
     }
     override fun onDestroy() { handwritingDialog?.dismiss();super.onDestroy() }
     private fun chooseDirection() {
